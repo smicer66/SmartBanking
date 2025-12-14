@@ -4,10 +4,13 @@ package com.probase.potzr.SmartBanking.service;
 import com.probase.potzr.SmartBanking.contract.ICoreBanking;
 import com.probase.potzr.SmartBanking.exceptions.ApplicationException;
 import com.probase.potzr.SmartBanking.factory.CoreBankingFactory;
+import com.probase.potzr.SmartBanking.factory.FundsTransferFactory;
 import com.probase.potzr.SmartBanking.models.enums.CoreBankingType;
+import com.probase.potzr.SmartBanking.models.enums.FundsTransferType;
 import com.probase.potzr.SmartBanking.models.requests.BalanceInquiryRequest;
 import com.probase.potzr.SmartBanking.models.requests.FundsTransferRequest;
 import com.probase.potzr.SmartBanking.models.responses.balanceinquiry.BalanceInquiryResponse;
+import com.probase.potzr.SmartBanking.models.responses.fundstransfer.FundsTransferResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +23,14 @@ public class CoreBankingService {
     private FundsTransferFactory fundsTransferFactory;
 
 
-    public BalanceInquiryResponse getAccountBalanceInquiry(BalanceInquiryRequest BalanceInquiryRequest) throws ApplicationException {
+    public BalanceInquiryResponse getAccountBalanceInquiry(BalanceInquiryRequest balanceInquiryRequest) throws ApplicationException {
         CoreBankingType coreBankingType = CoreBankingType.FLEXCUBE;
 
-        return coreBankingFactory.getAccountBalanceInquiry(coreBankingType, BalanceInquiryRequest);//.getCoreBankingType().name();
+        return coreBankingFactory.getAccountBalanceInquiry(coreBankingType, balanceInquiryRequest);//.getCoreBankingType().name();
     }
 
-    public BalanceInquiryResponse doFundsTransfer(FundsTransferRequest fundsTransferRequest) {
+    public FundsTransferResponse doFundsTransfer(FundsTransferRequest fundsTransferRequest) {
+
+        return fundsTransferFactory.doFundsTransfer(fundsTransferRequest);
     }
 }

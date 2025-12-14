@@ -4,6 +4,7 @@ import com.probase.potzr.SmartBanking.exceptions.ApplicationException;
 import com.probase.potzr.SmartBanking.models.requests.BalanceInquiryRequest;
 import com.probase.potzr.SmartBanking.models.requests.FundsTransferRequest;
 import com.probase.potzr.SmartBanking.models.responses.balanceinquiry.BalanceInquiryResponse;
+import com.probase.potzr.SmartBanking.models.responses.fundstransfer.FundsTransferResponse;
 import com.probase.potzr.SmartBanking.service.CoreBankingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +27,9 @@ public class BankingController {
     }
 
     @RequestMapping(value = "/funds-transfer", method = RequestMethod.POST)
-    public ResponseEntity<BalanceInquiryResponse> doFundsTransfer(@RequestBody(required = true) FundsTransferRequest fundsTransferRequest) throws ApplicationException {
-        BalanceInquiryResponse balanceInquiryResponse= coreBankingService.doFundsTransfer(fundsTransferRequest);
+    public ResponseEntity<FundsTransferResponse> doFundsTransfer(@RequestBody(required = true) FundsTransferRequest fundsTransferRequest) throws ApplicationException {
+        FundsTransferResponse fundsTransferResponse= coreBankingService.doFundsTransfer(fundsTransferRequest);
 
-        return ResponseEntity.ok().body(balanceInquiryResponse);
+        return ResponseEntity.ok().body(fundsTransferResponse);
     }
 }
