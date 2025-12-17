@@ -9,9 +9,11 @@ import com.probase.potzr.SmartBanking.models.enums.FundsTransferType;
 import com.probase.potzr.SmartBanking.models.requests.FundsTransferRequest;
 import com.probase.potzr.SmartBanking.models.responses.balanceinquiry.BalanceInquiryCasaResponse;
 import com.probase.potzr.SmartBanking.models.responses.balanceinquiry.BalanceInquiryResponse;
+import com.probase.potzr.SmartBanking.models.responses.fundstransfer.FundsTransferRTGSResponse;
 import com.probase.potzr.SmartBanking.models.responses.fundstransfer.FundsTransferResponse;
 import com.probase.potzr.SmartBanking.repositories.IClientRepository;
 import com.probase.potzr.SmartBanking.repositories.IClientSettingRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -36,7 +38,6 @@ public class RTGSFundsTransferClient implements IFundsTransferClient {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Autowired
     private Logger logger = Logger.getLogger("RTGSFundsTransferClient");
 
 
@@ -49,12 +50,12 @@ public class RTGSFundsTransferClient implements IFundsTransferClient {
     }
 
     @Override
-    public FundsTransferResponse doFundsTransfer(FundsTransferRequest fundsTransferRequest) {
+    public FundsTransferResponse doFundsTransfer(FundsTransferRequest fundsTransferRequest) throws ApplicationException {
         String sourceAccountNumber = fundsTransferRequest.getFromAccount();
         String recipientAccountNumber = fundsTransferRequest.getToAccount();
         String sourceBankCode = fundsTransferRequest.getFrombankCode();
         String recipientBankCode = fundsTransferRequest.getToBankCode();
-        String transferAmount = fundsTransferRequest.getTransferAmount();
+        BigDecimal transferAmount = fundsTransferRequest.getTransferAmount();
         String sourceCurrency = fundsTransferRequest.getFromCurrency();
         String recipientCurrency = fundsTransferRequest.getToCurrency();
 
@@ -70,6 +71,7 @@ public class RTGSFundsTransferClient implements IFundsTransferClient {
             }).findFirst();
 
             //http://(IP):(Port)/FCLiteWeb/FundTransferService/createContract
+            //RestService/Oracle_Flexcube_Restful_Services_Usage.pdf
             String uri = UriComponentsBuilder
                     .fromUriString(clientSetting.get().getSettingValue())
                     .build()
@@ -77,20 +79,18 @@ public class RTGSFundsTransferClient implements IFundsTransferClient {
 
             logger.info(uri);
 
-            ResponseEntity<BalanceInquiryCasaResponse> response =
+            ResponseEntity<FundsTransferRTGSResponse> response =
                     restTemplate.exchange(uri, HttpMethod.POST, new HttpEntity<>(fundsTransferRequest),
-                            new ParameterizedTypeReference<BalanceInquiryCasaResponse>() {
+                            new ParameterizedTypeReference<FundsTransferRTGSResponse>() {
                             });
 
             if (response.getBody() != null) {
-                BalanceInquiryCasaResponse balanceInquiryCasaResponse =  response.getBody();
+                FundsTransferRTGSResponse fundsTransferRTGSResponse =  response.getBody();
 
-                BalanceInquiryResponse balanceInquiryResponse = new BalanceInquiryResponse();
-                balanceInquiryResponse.setCurrency(balanceInquiryCasaResponse.getCcy());
-                balanceInquiryResponse.setBankAccountNumber(balanceInquiryCasaResponse.getCustAcNo());
-                balanceInquiryResponse.setAccountBalance(BigDecimal.valueOf(Double.parseDouble(balanceInquiryCasaResponse.getAvailableBalance())));
-                balanceInquiryResponse.setCurrentBalance(BigDecimal.valueOf(Double.parseDouble(balanceInquiryCasaResponse.getAvailableBalance())));
-                return balanceInquiryResponse;
+                FundsTransferResponse fundsTransferResponse = new FundsTransferResponse();
+                BeanUtils.copyProperties(fundsTransferRTGSResponse, fundsTransferResponse);
+
+                return fundsTransferResponse;
             }
         } catch (RuntimeException e) {
             throw new ApplicationException("Failed to retrieve balance inquiry", e);

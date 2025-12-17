@@ -29,7 +29,7 @@ public class CoreBankingService {
         return coreBankingFactory.getAccountBalanceInquiry(coreBankingType, balanceInquiryRequest);//.getCoreBankingType().name();
     }
 
-    public FundsTransferResponse doFundsTransfer(FundsTransferRequest fundsTransferRequest) {
+    public FundsTransferResponse doFundsTransfer(FundsTransferRequest fundsTransferRequest) throws ApplicationException {
 
         return fundsTransferFactory.doFundsTransfer(fundsTransferRequest);
     }

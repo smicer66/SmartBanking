@@ -5,6 +5,8 @@ import com.probase.potzr.SmartBanking.models.enums.FundsTransferType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 public class FundsTransferRequest {
@@ -16,7 +18,7 @@ public class FundsTransferRequest {
     private String toBranchCode;
     private String toBankCode;
     private String toCurrency;
-    private String transferAmount;
+    private BigDecimal transferAmount;
     private String ultimateBeneficiaryCode;
     private FundsTransferType fundsTransferType;
 

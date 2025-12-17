@@ -2,6 +2,7 @@ package com.probase.potzr.SmartBanking.factory;
 
 
 import com.probase.potzr.SmartBanking.contract.IFundsTransferClient;
+import com.probase.potzr.SmartBanking.exceptions.ApplicationException;
 import com.probase.potzr.SmartBanking.models.enums.FundsTransferType;
 import com.probase.potzr.SmartBanking.models.requests.FundsTransferRequest;
 import com.probase.potzr.SmartBanking.models.responses.fundstransfer.FundsTransferResponse;
@@ -26,7 +27,7 @@ public class FundsTransferFactory {
         });
     }
 
-    public FundsTransferResponse doFundsTransfer(FundsTransferRequest fundsTransferRequest) {
+    public FundsTransferResponse doFundsTransfer(FundsTransferRequest fundsTransferRequest) throws ApplicationException {
         FundsTransferType fundsTransferType = fundsTransferRequest.getFundsTransferType();
         IFundsTransferClient iFundsTransferClient = fundsTransferClientMap.get(fundsTransferType);
 

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RestController
-@RequestMapping("/api/v1/banking/balance-inquiry")
+@RequestMapping("/api/v1/banking")
 public class BankingController {
 
     @Autowired
