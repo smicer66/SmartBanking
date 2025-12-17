@@ -2,6 +2,7 @@ package com.probase.potzr.SmartBanking.config.bridge;
 
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -23,6 +24,8 @@ public class BridgeDataSourceConfig {
     private String username;
     @Value("${spring.dummy-datasource.password}")
     private String password;
+    @Value("${spring.dummy-datasource.url}")
+    private String dataSourceUrl;
 
 
 
@@ -30,9 +33,14 @@ public class BridgeDataSourceConfig {
     @Bean(name="BridgeDataSourceConfig")
     public DataSource dataSource()
     {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(driverClassName);
-        dataSource.setUsername(username);;
-        dataSource.setPassword(password);
+        DataSourceBuilder dsb = DataSourceBuilder.create();
+        dsb.driverClassName(driverClassName);
+        dsb.username(username);;
+        dsb.password(password);
+        dsb.url(dataSourceUrl);
+
+
+
+        return dsb.build();
     }
 }

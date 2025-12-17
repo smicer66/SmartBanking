@@ -32,17 +32,11 @@ import java.util.logging.Logger;
 @Component
 public class RTGSFundsTransferClient implements IFundsTransferClient {
 
-    @Autowired
-    private IClientRepository clientRepository;
 
     @Autowired
     private RestTemplate restTemplate;
 
     private Logger logger = Logger.getLogger("RTGSFundsTransferClient");
-
-
-    @Autowired
-    private IClientSettingRepository clientSettingRepository;
 
     @Override
     public FundsTransferType getFundsTransferType() {
@@ -50,7 +44,8 @@ public class RTGSFundsTransferClient implements IFundsTransferClient {
     }
 
     @Override
-    public FundsTransferResponse doFundsTransfer(FundsTransferRequest fundsTransferRequest) throws ApplicationException {
+    public FundsTransferResponse doFundsTransfer(Client client, Collection<ClientSetting> clientSettings,
+                     FundsTransferRequest fundsTransferRequest) throws ApplicationException {
         String sourceAccountNumber = fundsTransferRequest.getFromAccount();
         String recipientAccountNumber = fundsTransferRequest.getToAccount();
         String sourceBankCode = fundsTransferRequest.getFrombankCode();
@@ -62,8 +57,7 @@ public class RTGSFundsTransferClient implements IFundsTransferClient {
 
 
 
-        Client client = clientRepository.getClientByBankCode(sourceBankCode);
-        Collection<ClientSetting> clientSettings = clientSettingRepository.getClientSettingByClientId(client.getClientId());
+
         try {
             String endppoint = null;
             Optional<ClientSetting> clientSetting = clientSettings.stream().filter(cs -> {

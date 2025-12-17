@@ -33,10 +33,6 @@ public class FlexCubeCoreBanking implements ICoreBanking {
     private static CoreBankingType coreBankingType = CoreBankingType.FLEXCUBE;
 
     @Autowired
-    private IClientSettingRepository clientSettingRepository;
-    @Autowired
-    private IClientRepository clientRepository;
-    @Autowired
     RestTemplate restTemplate;
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -46,13 +42,11 @@ public class FlexCubeCoreBanking implements ICoreBanking {
     }
 
     @Override
-    public BalanceInquiryResponse getBalanceInquiry(BalanceInquiryRequest balanceInquiryRequest) throws ApplicationException {
+    public BalanceInquiryResponse getBalanceInquiry(Collection<ClientSetting> clientSettings, BalanceInquiryRequest balanceInquiryRequest) throws ApplicationException {
 
         String accountNumber = balanceInquiryRequest.getBankAccountNumber();
         String bankCode = balanceInquiryRequest.getBankCode();
 
-        Client client = clientRepository.getClientByBankCode(bankCode);
-        Collection<ClientSetting> clientSettings = clientSettingRepository.getClientSettingByClientId(client.getClientId());
         try {
             String endppoint = null;
             Optional<ClientSetting> clientSetting = clientSettings.stream().filter(cs -> {

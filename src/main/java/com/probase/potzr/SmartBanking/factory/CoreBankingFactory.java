@@ -3,6 +3,7 @@ package com.probase.potzr.SmartBanking.factory;
 import com.probase.potzr.SmartBanking.contract.ICoreBanking;
 import com.probase.potzr.SmartBanking.contract.IFundsTransferClient;
 import com.probase.potzr.SmartBanking.exceptions.ApplicationException;
+import com.probase.potzr.SmartBanking.models.ClientSetting;
 import com.probase.potzr.SmartBanking.models.enums.CoreBankingType;
 import com.probase.potzr.SmartBanking.models.requests.BalanceInquiryRequest;
 import com.probase.potzr.SmartBanking.models.requests.FundsTransferRequest;
@@ -11,10 +12,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class CoreBankingFactory {
@@ -32,9 +30,9 @@ public class CoreBankingFactory {
     }
 
 
-    public BalanceInquiryResponse getAccountBalanceInquiry(CoreBankingType coreBankingType, BalanceInquiryRequest balanceInquiryRequest ) throws ApplicationException {
+    public BalanceInquiryResponse getAccountBalanceInquiry(Collection<ClientSetting> clientSettings, CoreBankingType coreBankingType, BalanceInquiryRequest balanceInquiryRequest ) throws ApplicationException {
         ICoreBanking iCoreBanking =  this.coreBankingMap.get(coreBankingType);
-        return iCoreBanking.getBalanceInquiry(balanceInquiryRequest);
+        return iCoreBanking.getBalanceInquiry(clientSettings, balanceInquiryRequest);
     }
 
     public List<CoreBankingType> getCoreBankingTypes() {

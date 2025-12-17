@@ -1,12 +1,17 @@
 package com.probase.potzr.SmartBanking.contract;
 
 import com.probase.potzr.SmartBanking.exceptions.ApplicationException;
+import com.probase.potzr.SmartBanking.models.Client;
+import com.probase.potzr.SmartBanking.models.ClientSetting;
 import com.probase.potzr.SmartBanking.models.enums.FundsTransferType;
 import com.probase.potzr.SmartBanking.models.requests.FundsTransferRequest;
 import com.probase.potzr.SmartBanking.models.responses.fundstransfer.FundsTransferResponse;
 
+import java.util.Collection;
+
 public interface IFundsTransferClient {
 
     FundsTransferType getFundsTransferType();
-    FundsTransferResponse doFundsTransfer(FundsTransferRequest fundsTransferRequest) throws ApplicationException;
+    FundsTransferResponse doFundsTransfer(Client client,
+          Collection<ClientSetting> clientSettings, FundsTransferRequest fundsTransferRequest) throws ApplicationException;
 }

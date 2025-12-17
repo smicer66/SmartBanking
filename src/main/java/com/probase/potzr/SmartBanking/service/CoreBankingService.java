@@ -5,14 +5,20 @@ import com.probase.potzr.SmartBanking.contract.ICoreBanking;
 import com.probase.potzr.SmartBanking.exceptions.ApplicationException;
 import com.probase.potzr.SmartBanking.factory.CoreBankingFactory;
 import com.probase.potzr.SmartBanking.factory.FundsTransferFactory;
+import com.probase.potzr.SmartBanking.models.Client;
+import com.probase.potzr.SmartBanking.models.ClientSetting;
 import com.probase.potzr.SmartBanking.models.enums.CoreBankingType;
 import com.probase.potzr.SmartBanking.models.enums.FundsTransferType;
 import com.probase.potzr.SmartBanking.models.requests.BalanceInquiryRequest;
 import com.probase.potzr.SmartBanking.models.requests.FundsTransferRequest;
 import com.probase.potzr.SmartBanking.models.responses.balanceinquiry.BalanceInquiryResponse;
 import com.probase.potzr.SmartBanking.models.responses.fundstransfer.FundsTransferResponse;
+import com.probase.potzr.SmartBanking.repositories.IClientRepository;
+import com.probase.potzr.SmartBanking.repositories.IClientSettingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Collection;
 
 @Service
 public class CoreBankingService {
@@ -22,15 +28,25 @@ public class CoreBankingService {
     @Autowired
     private FundsTransferFactory fundsTransferFactory;
 
+    @Autowired
+    private IClientSettingRepository clientSettingRepository;
+    @Autowired
+    private IClientRepository clientRepository;
 
     public BalanceInquiryResponse getAccountBalanceInquiry(BalanceInquiryRequest balanceInquiryRequest) throws ApplicationException {
         CoreBankingType coreBankingType = CoreBankingType.FLEXCUBE;
 
-        return coreBankingFactory.getAccountBalanceInquiry(coreBankingType, balanceInquiryRequest);//.getCoreBankingType().name();
+        String bankCode = balanceInquiryRequest.getBankCode();
+        Client client = clientRepository.getClientByBankCode(bankCode);
+        Collection<ClientSetting> clientSettings = clientSettingRepository.getClientSettingByClientId(client.getClientId());
+        return coreBankingFactory.getAccountBalanceInquiry(clientSettings, coreBankingType, balanceInquiryRequest);//.getCoreBankingType().name();
     }
 
     public FundsTransferResponse doFundsTransfer(FundsTransferRequest fundsTransferRequest) throws ApplicationException {
 
-        return fundsTransferFactory.doFundsTransfer(fundsTransferRequest);
+        String sourceBankCode = fundsTransferRequest.getFrombankCode();
+        Client client = clientRepository.getClientByBankCode(sourceBankCode);
+        Collection<ClientSetting> clientSettings = clientSettingRepository.getClientSettingByClientId(client.getClientId());
+        return fundsTransferFactory.doFundsTransfer(client, clientSettings, fundsTransferRequest);
     }
 }

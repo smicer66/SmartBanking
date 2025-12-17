@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Entity
 @Table(name = "bridge_funds_transfer")
 public class BridgeFundsTransfer {
     @Id

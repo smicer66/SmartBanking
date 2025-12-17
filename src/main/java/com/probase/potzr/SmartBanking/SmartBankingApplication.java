@@ -11,10 +11,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @EnableAutoConfiguration
 @SpringBootApplication
-@EntityScan("com.probase")
+@EntityScan("com.probase.potzr.SmartBanking")
+@EnableJpaRepositories("com.probase.potzr.SmartBanking.repositories")
 public class SmartBankingApplication implements ApplicationContextAware {
 
 	private static ApplicationContext context;
