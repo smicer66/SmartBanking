@@ -2,15 +2,12 @@ package com.probase.potzr.SmartBanking.impl;
 
 import com.probase.potzr.SmartBanking.contract.ICoreBanking;
 import com.probase.potzr.SmartBanking.exceptions.ApplicationException;
-import com.probase.potzr.SmartBanking.models.Client;
-import com.probase.potzr.SmartBanking.models.ClientSetting;
+import com.probase.potzr.SmartBanking.models.core.ClientSetting;
 import com.probase.potzr.SmartBanking.models.enums.ClientSettingName;
 import com.probase.potzr.SmartBanking.models.enums.CoreBankingType;
 import com.probase.potzr.SmartBanking.models.requests.BalanceInquiryRequest;
 import com.probase.potzr.SmartBanking.models.responses.balanceinquiry.BalanceInquiryCasaResponse;
 import com.probase.potzr.SmartBanking.models.responses.balanceinquiry.BalanceInquiryResponse;
-import com.probase.potzr.SmartBanking.repositories.IClientRepository;
-import com.probase.potzr.SmartBanking.repositories.IClientSettingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +20,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 

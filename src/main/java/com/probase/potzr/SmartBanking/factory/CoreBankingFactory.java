@@ -1,14 +1,11 @@
 package com.probase.potzr.SmartBanking.factory;
 
 import com.probase.potzr.SmartBanking.contract.ICoreBanking;
-import com.probase.potzr.SmartBanking.contract.IFundsTransferClient;
 import com.probase.potzr.SmartBanking.exceptions.ApplicationException;
-import com.probase.potzr.SmartBanking.models.ClientSetting;
+import com.probase.potzr.SmartBanking.models.core.ClientSetting;
 import com.probase.potzr.SmartBanking.models.enums.CoreBankingType;
 import com.probase.potzr.SmartBanking.models.requests.BalanceInquiryRequest;
-import com.probase.potzr.SmartBanking.models.requests.FundsTransferRequest;
 import com.probase.potzr.SmartBanking.models.responses.balanceinquiry.BalanceInquiryResponse;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

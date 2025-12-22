@@ -1,4 +1,4 @@
-package com.probase.potzr.SmartBanking.config;
+package com.probase.potzr.SmartBanking.config.core;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

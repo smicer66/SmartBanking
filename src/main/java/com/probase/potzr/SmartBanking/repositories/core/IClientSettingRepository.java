@@ -1,13 +1,12 @@
-package com.probase.potzr.SmartBanking.repositories;
+package com.probase.potzr.SmartBanking.repositories.core;
 
-import com.probase.potzr.SmartBanking.models.ClientSetting;
+import com.probase.potzr.SmartBanking.models.core.ClientSetting;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.Optional;
 
 
 @Repository

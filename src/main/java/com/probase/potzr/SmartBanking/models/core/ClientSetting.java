@@ -1,4 +1,4 @@
-package com.probase.potzr.SmartBanking.models;
+package com.probase.potzr.SmartBanking.models.core;
 
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

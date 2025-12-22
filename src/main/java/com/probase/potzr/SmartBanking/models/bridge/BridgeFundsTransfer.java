@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.probase.potzr.SmartBanking.deserializers.TimestampDeserializer;
 import com.probase.potzr.SmartBanking.serializers.JsonDateTimeSerializer;
+import jakarta.annotation.sql.DataSourceDefinition;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,10 +14,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 
+
+@Table(name = "bridge_funds_transfer")
 @Getter
 @Setter
 @Entity
-@Table(name = "bridge_funds_transfer")
 public class BridgeFundsTransfer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

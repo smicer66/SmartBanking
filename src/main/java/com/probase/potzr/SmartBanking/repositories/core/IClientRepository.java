@@ -1,6 +1,6 @@
-package com.probase.potzr.SmartBanking.repositories;
+package com.probase.potzr.SmartBanking.repositories.core;
 
-import com.probase.potzr.SmartBanking.models.Client;
+import com.probase.potzr.SmartBanking.models.core.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
