@@ -33,9 +33,11 @@ public class FundsTransferFactory {
     public FundsTransferResponse doFundsTransfer(Client client,
          Collection<ClientSetting> clientSettings, FundsTransferRequest fundsTransferRequest
     ) throws ApplicationException {
-        FundsTransferType fundsTransferType = fundsTransferRequest.getFundsTransferType();
-        IFundsTransferClient iFundsTransferClient = fundsTransferClientMap.get(fundsTransferType);
+        System.out.println(fundsTransferRequest);
+        //FundsTransferType fundsTransferType = fundsTransferRequest.getFundsTransferType();
+        //IFundsTransferClient iFundsTransferClient = fundsTransferClientMap.get(fundsTransferType);
 
-        return iFundsTransferClient.doFundsTransfer(client, clientSettings, fundsTransferRequest);
+        //return iFundsTransferClient.doFundsTransfer(client, clientSettings, fundsTransferRequest);
+        return new FundsTransferResponse();
     }
 }
