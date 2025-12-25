@@ -38,9 +38,6 @@ public class Transaction {
     @Column(name = "channel", nullable = false)
     private Channel channel;
 
-    @Column(name = "transactionType", nullable = false)
-    private String transactionType;
-
     @Column(name = "bankPaymentReference")
     String bankPaymentReference;
 

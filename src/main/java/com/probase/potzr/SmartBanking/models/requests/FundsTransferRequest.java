@@ -23,4 +23,5 @@ public class FundsTransferRequest {
     private String ultimateBeneficiaryCode;
     private FundsTransferType fundsTransferType;
     private Channel channel;
+    private String orderRef;
 }

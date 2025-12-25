@@ -22,4 +22,5 @@ public class FundsTransferRTGSResponse {
     private String status;
     private String transactionId;
     private String productCode;
+    private String transferRef;
 }

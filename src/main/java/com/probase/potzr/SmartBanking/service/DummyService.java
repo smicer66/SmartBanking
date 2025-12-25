@@ -34,6 +34,7 @@ public class DummyService {
         String transactionRef = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
 
         String sourceBankCode = fundsTransferRequest.getFrombankCode();
+        Client sourceClient = clientRepository.getClientByBankCode(fundsTransferRequest.getFrombankCode());
         BridgeFundsTransfer bridgeFundsTransfer = new BridgeFundsTransfer();
         BeanUtils.copyProperties(fundsTransferRequest, bridgeFundsTransfer);
         bridgeFundsTransfer.setFundsTransferType(fundsTransferRequest.getFundsTransferType().name());
@@ -48,8 +49,9 @@ public class DummyService {
         FundsTransferResponse fundsTransferResponse = new FundsTransferResponse();
         BeanUtils.copyProperties(bridgeFundsTransfer, fundsTransferResponse);
         fundsTransferResponse.setStatus("Success");
-        fundsTransferResponse.setFromBranch("ZICB");
-        fundsTransferResponse.setToBranch("ZICB");
+        fundsTransferResponse.setToBranch(recipientClient.getClientName());
+        fundsTransferResponse.setFromBranch(sourceClient.getClientName());
+
 
 
         return fundsTransferResponse;

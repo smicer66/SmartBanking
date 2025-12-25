@@ -1,15 +1,16 @@
 package com.probase.potzr.SmartBanking.impl;
 
+import com.google.gson.Gson;
 import com.probase.potzr.SmartBanking.contract.IFundsTransferClient;
 import com.probase.potzr.SmartBanking.exceptions.ApplicationException;
 import com.probase.potzr.SmartBanking.models.core.Client;
 import com.probase.potzr.SmartBanking.models.core.ClientSetting;
 import com.probase.potzr.SmartBanking.models.core.Transaction;
-import com.probase.potzr.SmartBanking.models.enums.ClientSettingName;
-import com.probase.potzr.SmartBanking.models.enums.FundsTransferType;
+import com.probase.potzr.SmartBanking.models.enums.*;
 import com.probase.potzr.SmartBanking.models.requests.FundsTransferRequest;
 import com.probase.potzr.SmartBanking.models.responses.fundstransfer.FundsTransferRTGSResponse;
 import com.probase.potzr.SmartBanking.models.responses.fundstransfer.FundsTransferResponse;
+import com.probase.potzr.SmartBanking.repositories.core.ITransactionRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,8 @@ public class RTGSFundsTransferClient implements IFundsTransferClient {
 
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private ITransactionRepository transactionRepository;
 
     private Logger logger = Logger.getLogger("RTGSFundsTransferClient");
 
@@ -57,6 +60,16 @@ public class RTGSFundsTransferClient implements IFundsTransferClient {
         transaction.setClientId(client.getClientId());
         transaction.setChannel(fundsTransferRequest.getChannel());
         transaction.setMessageRequest(new Gson().toJson(fundsTransferRequest));
+        transaction.setOrderRef(fundsTransferRequest.getOrderRef());
+        transaction.setRecipientDetails(fundsTransferRequest.getToAccount()+"||||"+fundsTransferRequest.getToBankCode()+"||||"+fundsTransferRequest.getToBranchCode());
+        transaction.setFixedCharge(BigDecimal.valueOf(0.00));
+        transaction.setTransactionCharge(BigDecimal.valueOf(0.00));
+        transaction.setSchemeTransactionCharge(BigDecimal.valueOf(0.00));
+        transaction.setSchemeTransactionPercentage(BigDecimal.valueOf(0.00));
+        transaction.setServiceType(ServiceType.FUNDS_TRANSFER);
+        transaction.setSmartBankingCurrency(SmartBankingCurrency.valueOf(fundsTransferRequest.getFromCurrency()));
+        transaction.setStatus(TransactionStatus.PENDING);
+        transaction = (Transaction) transactionRepository.save(transaction);
 
 
 
@@ -86,6 +99,12 @@ public class RTGSFundsTransferClient implements IFundsTransferClient {
 
                 FundsTransferResponse fundsTransferResponse = new FundsTransferResponse();
                 BeanUtils.copyProperties(fundsTransferRTGSResponse, fundsTransferResponse);
+
+                if(fundsTransferResponse.getStatus().equals("Success"))
+                {
+                    transaction.setStatus(TransactionStatus.SUCCESS);
+                    transaction.setBankPaymentReference(fundsTransferResponse.getTransactionRef());
+                }
 
                 return fundsTransferResponse;
             }

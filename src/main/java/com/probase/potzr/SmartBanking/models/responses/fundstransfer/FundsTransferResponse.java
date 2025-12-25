@@ -18,5 +18,6 @@ public class FundsTransferResponse {
     private String ultimateBeneficiary;
     private String status;
     private Long transactionId;
+    private String transactionRef;
 
 }
