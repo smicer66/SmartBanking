@@ -3,6 +3,7 @@ package com.probase.potzr.SmartBanking.config.core;
 
 import com.probase.potzr.SmartBanking.models.core.Client;
 import com.probase.potzr.SmartBanking.models.core.ClientSetting;
+import com.probase.potzr.SmartBanking.models.core.Transaction;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +26,7 @@ import java.util.Map;
 //@EnableTransactionManagement
 @EnableJpaRepositories(
         entityManagerFactoryRef = "entityManagerFactory",
-        basePackageClasses = {Client.class, ClientSetting.class},
+        basePackageClasses = {Client.class, ClientSetting.class, Transaction.class},
         transactionManagerRef = "DataSourceConfigTransactionManager"
 )
 @Primary

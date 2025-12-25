@@ -4,11 +4,13 @@ import com.probase.potzr.SmartBanking.contract.IFundsTransferClient;
 import com.probase.potzr.SmartBanking.exceptions.ApplicationException;
 import com.probase.potzr.SmartBanking.models.core.Client;
 import com.probase.potzr.SmartBanking.models.core.ClientSetting;
+import com.probase.potzr.SmartBanking.models.core.Transaction;
 import com.probase.potzr.SmartBanking.models.enums.ClientSettingName;
 import com.probase.potzr.SmartBanking.models.enums.FundsTransferType;
 import com.probase.potzr.SmartBanking.models.requests.FundsTransferRequest;
 import com.probase.potzr.SmartBanking.models.responses.fundstransfer.FundsTransferRTGSResponse;
 import com.probase.potzr.SmartBanking.models.responses.fundstransfer.FundsTransferResponse;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -49,6 +51,12 @@ public class RTGSFundsTransferClient implements IFundsTransferClient {
         String sourceCurrency = fundsTransferRequest.getFromCurrency();
         String recipientCurrency = fundsTransferRequest.getToCurrency();
 
+
+        Transaction transaction = new Transaction();
+        transaction.setTransactionRef(RandomStringUtils.randomAlphanumeric(16).toUpperCase());
+        transaction.setClientId(client.getClientId());
+        transaction.setChannel(fundsTransferRequest.getChannel());
+        transaction.setMessageRequest(new Gson().toJson(fundsTransferRequest));
 
 
 

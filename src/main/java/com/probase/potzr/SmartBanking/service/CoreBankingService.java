@@ -45,6 +45,7 @@ public class CoreBankingService {
         String sourceBankCode = fundsTransferRequest.getFrombankCode();
         Client client = clientRepository.getClientByBankCode(sourceBankCode);
         Collection<ClientSetting> clientSettings = clientSettingRepository.getClientSettingByClientId(client.getClientId());
+        System.out.println("client settings .." + clientSettings.size());
         return fundsTransferFactory.doFundsTransfer(client, clientSettings, fundsTransferRequest);
     }
 

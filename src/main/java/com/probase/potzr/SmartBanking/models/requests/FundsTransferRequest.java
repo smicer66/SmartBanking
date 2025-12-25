@@ -1,6 +1,7 @@
 package com.probase.potzr.SmartBanking.models.requests;
 
 
+import com.probase.potzr.SmartBanking.models.enums.Channel;
 import com.probase.potzr.SmartBanking.models.enums.FundsTransferType;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,5 +22,5 @@ public class FundsTransferRequest {
     private BigDecimal transferAmount;
     private String ultimateBeneficiaryCode;
     private FundsTransferType fundsTransferType;
-
+    private Channel channel;
 }

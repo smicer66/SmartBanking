@@ -19,7 +19,7 @@ import java.util.Random;
 @RequestMapping("/test")
 public class DummyController {
 
-    /*@Value("${casa.account.customerNo}")
+    @Value("${casa.account.customerNo}")
     private String customerNo;
     @Value("${casa.account.ccy}")
     private String casaAccountCCY;
@@ -64,5 +64,5 @@ public class DummyController {
                         dDummyService.doFundsTransfer(fundsTransferRequest)
                 );
 
-    }*/
+    }
 }
