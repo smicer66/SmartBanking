@@ -2,6 +2,7 @@ package com.probase.potzr.SmartBanking.config.core;
 
 
 import com.probase.potzr.SmartBanking.models.core.*;
+import com.probase.potzr.SmartBanking.models.core.Token;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +14,6 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -24,7 +24,10 @@ import java.util.Map;
 //@EnableTransactionManagement
 @EnableJpaRepositories(
         entityManagerFactoryRef = "entityManagerFactory",
-        basePackageClasses = {Client.class, ClientSetting.class, Transaction.class, Address.class, Customer.class, IdentificationDocument.class, Address.class},
+        basePackageClasses = {Client.class, ClientSetting.class, Transaction.class,
+                Address.class, Customer.class, IdentificationDocument.class, Address.class,
+                User.class, Token.class
+        },
         transactionManagerRef = "transactionManager"
 )
 @Primary

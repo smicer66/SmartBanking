@@ -1,4 +1,4 @@
-package com.probase.potzr.SmartBanking.repositories.core;
+package com.probase.potzr.SmartBanking.models.core;
 
 
 import jakarta.persistence.*;

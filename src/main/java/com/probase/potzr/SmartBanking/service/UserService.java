@@ -6,7 +6,7 @@ import com.probase.potzr.SmartBanking.models.requests.CreateUserRequest;
 import com.probase.potzr.SmartBanking.models.responses.user.CreateUserResponse;
 import com.probase.potzr.SmartBanking.repositories.core.ITokenRepository;
 import com.probase.potzr.SmartBanking.repositories.core.IUserRepository;
-import com.probase.potzr.SmartBanking.repositories.core.Token;
+import com.probase.potzr.SmartBanking.models.core.Token;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
