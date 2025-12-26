@@ -9,6 +9,8 @@ import com.probase.potzr.SmartBanking.models.enums.PaymentCardIssuer;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
 public class IssueCardRequest {
@@ -17,4 +19,6 @@ public class IssueCardRequest {
     private IdentificationDocument identificationDocument;
     private CardType cardType;
     private PaymentCardIssuer paymentCardIssuer;
+    private String bankCode;
+    private Date cardRequestDate;
 }

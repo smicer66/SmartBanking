@@ -9,4 +9,9 @@ public enum IdentificationDocumentType {
     private IdentificationDocumentType(String label) {
         this.label = label;
     }
+
+    public String getValue()
+    {
+        return this.getValue();
+    }
 }

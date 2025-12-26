@@ -10,7 +10,7 @@ import lombok.Setter;
 public class ClientIdentificationData {
     private String identificationDocumentDetails;
     private String identificationDocumentNumber;
-    private IdentificationDocumentType identificationDocumentType;
+    private String identificationDocumentType;
     private String socialNumber;
     private String taxPosition;
     private String taxpayerIdentifier;
