@@ -11,6 +11,8 @@ import com.probase.potzr.SmartBanking.serializers.JsonDateTimeSerializer;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -21,6 +23,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class Transaction {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,9 +65,11 @@ public class Transaction {
     @Column(nullable = false)
     SmartBankingCurrency smartBankingCurrency;
 
+    @Lob
     @Column(nullable = false)
     String messageRequest;
 
+    @Lob
     @Column(nullable = true)
     String messageResponse;
 
@@ -98,6 +103,7 @@ public class Transaction {
     @JsonSerialize(using = JsonDateTimeSerializer.class)
     @JsonDeserialize(using = TimestampDeserializer.class)
     @Column(nullable= false)
+    @CreatedDate
     private LocalDateTime createdAt;
 
     @JsonSerialize(using = JsonDateTimeSerializer.class)
@@ -108,10 +114,15 @@ public class Transaction {
     @JsonSerialize(using = JsonDateTimeSerializer.class)
     @JsonDeserialize(using = TimestampDeserializer.class)
     @Column(nullable= false)
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
 
-
-
+    @PrePersist
+    protected void onCreate()
+    {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
 
 }

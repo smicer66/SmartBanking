@@ -27,7 +27,7 @@ import java.util.Map;
 @EnableJpaRepositories(
         entityManagerFactoryRef = "entityManagerFactory",
         basePackageClasses = {Client.class, ClientSetting.class, Transaction.class},
-        transactionManagerRef = "DataSourceConfigTransactionManager"
+        transactionManagerRef = "transactionManager"
 )
 @Primary
 public class DataSourceConfig {
@@ -82,9 +82,9 @@ public class DataSourceConfig {
         return bean;
     }
 
-    @Bean(name = "DataSourceConfigTransactionManager")
+    @Bean(name = "transactionManager")
     @Primary
-    public PlatformTransactionManager DataSourceConfigTransactionManager(){
+    public PlatformTransactionManager transactionManager(){
         JpaTransactionManager manager = new JpaTransactionManager();
         manager.setEntityManagerFactory(entityManagerFactory().getObject());
         return manager;

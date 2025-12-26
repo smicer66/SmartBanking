@@ -21,8 +21,7 @@ public class BankingController {
 
     @RequestMapping(value = "/account-balance-inquiry", method = RequestMethod.POST)
     public ResponseEntity<BalanceInquiryResponse> getAccountBalanceInquiry(@RequestBody(required = true) BalanceInquiryRequest balanceInquiryRequest) throws ApplicationException {
-        //BalanceInquiryResponse balanceInquiryResponse= coreBankingService.getAccountBalanceInquiry(balanceInquiryRequest);
-        BalanceInquiryResponse balanceInquiryResponse = new BalanceInquiryResponse();
+        BalanceInquiryResponse balanceInquiryResponse= coreBankingService.getAccountBalanceInquiry(balanceInquiryRequest);
 
         return ResponseEntity.ok().body(balanceInquiryResponse);
     }
@@ -30,7 +29,6 @@ public class BankingController {
     @RequestMapping(value = "/funds-transfer", method = RequestMethod.POST)
     public ResponseEntity<FundsTransferResponse> doFundsTransfer(@RequestBody(required = true) FundsTransferRequest fundsTransferRequest) throws ApplicationException {
         FundsTransferResponse fundsTransferResponse= coreBankingService.doFundsTransfer(fundsTransferRequest);
-        //FundsTransferResponse fundsTransferResponse = new FundsTransferResponse();
 
         return ResponseEntity.ok().body(fundsTransferResponse);
     }

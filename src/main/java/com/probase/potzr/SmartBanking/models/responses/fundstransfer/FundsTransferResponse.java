@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 @Getter
 @Setter
@@ -17,7 +18,7 @@ public class FundsTransferResponse {
     private BigDecimal transferAmount;
     private String ultimateBeneficiary;
     private String status;
-    private Long transactionId;
+    private BigInteger transactionId;
     private String transactionRef;
 
 }
