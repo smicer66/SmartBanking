@@ -51,6 +51,7 @@ public class DummyService {
         fundsTransferResponse.setStatus("Success");
         fundsTransferResponse.setToBranch(recipientClient.getClientName());
         fundsTransferResponse.setFromBranch(sourceClient.getClientName());
+        fundsTransferResponse.setTransactionRef(bridgeFundsTransfer.getTransactionRef());
 
 
 

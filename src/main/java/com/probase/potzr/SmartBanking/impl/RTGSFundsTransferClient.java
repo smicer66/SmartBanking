@@ -91,18 +91,17 @@ public class RTGSFundsTransferClient implements IFundsTransferClient {
 
             logger.info(uri);
 
-            ResponseEntity<FundsTransferRTGSResponse> response =
+            ResponseEntity<FundsTransferResponse> response =
                     restTemplate.exchange(uri, HttpMethod.POST, new HttpEntity<>(fundsTransferRequest),
-                            new ParameterizedTypeReference<FundsTransferRTGSResponse>() {
+                            new ParameterizedTypeReference<FundsTransferResponse>() {
                             });
 
             if (response.getBody() != null) {
-                FundsTransferRTGSResponse fundsTransferRTGSResponse =  response.getBody();
+                FundsTransferResponse fundsTransferResponse =  response.getBody();
 
-                FundsTransferResponse fundsTransferResponse = new FundsTransferResponse();
-                BeanUtils.copyProperties(fundsTransferRTGSResponse, fundsTransferResponse);
 
-                if(fundsTransferRTGSResponse.getStatus().equals("Success"))
+                System.out.println(new Gson().toJson(fundsTransferResponse));
+                if(fundsTransferResponse.getStatus().equals("Success"))
                 {
                     transaction.setStatus(TransactionStatus.SUCCESS);
                     transaction.setBankPaymentReference(fundsTransferResponse.getTransactionRef());
@@ -114,6 +113,9 @@ public class RTGSFundsTransferClient implements IFundsTransferClient {
                 fundsTransferResponse.setTransactionRef(transaction.getTransactionRef());
                 fundsTransferResponse.setUltimateBeneficiary(fundsTransferRequest.getToBankCode());
                 fundsTransferResponse.setTransferAmount(transaction.getTransactionAmount());
+
+                transaction.setMessageResponse(new Gson().toJson(fundsTransferResponse));
+                transaction = (Transaction) transactionRepository.save(transaction);
 
                 return fundsTransferResponse;
             }
