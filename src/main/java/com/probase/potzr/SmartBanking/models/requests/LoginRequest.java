@@ -1,15 +1,13 @@
 package com.probase.potzr.SmartBanking.models.requests;
 
 
-import jakarta.persistence.PrePersist;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateUserRequest {
-    private String mobileNumber;
-    private String emailAddress;
+public class LoginRequest {
+    private String username;
     private String password;
 
 

@@ -1,0 +1,92 @@
+package com.probase.potzr.SmartBanking.config.core;
+
+
+import com.probase.potzr.SmartBanking.providers.SmartBankingAuthenticationProvider;
+import com.probase.potzr.SmartBanking.providers.TokenProvider;
+import com.probase.potzr.SmartBanking.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.SecurityBuilder;
+import org.springframework.security.config.annotation.SecurityConfigurer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig{
+
+    @Autowired
+    private SmartBankingAuthenticationProvider authProvider;
+    @Autowired
+    private TokenProvider tokenProvider;
+    @Autowired
+    private UserService userService;
+
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+//    @Bean
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.authenticationProvider(authProvider);
+//    }
+    @Bean
+    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.authenticationProvider(authProvider);
+        return authenticationManagerBuilder.build();
+    }
+
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//        return web -> web
+//                .ignoring().requestMatchers("/api/v1/user/create-new-user", "/api/v1/user/login");
+//    }
+
+//    @Bean
+//    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
+//        return http
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests(auth -> {
+//                    auth.requestMatchers("/api/v1/user/login").permitAll();
+//                    auth.anyRequest().authenticated();
+//                })
+//
+//                .formLogin(Customizer.withDefaults()).build();
+//    }
+
+    @Bean
+    protected SecurityFilterChain configure(HttpSecurity http) throws Exception
+    {
+        return http.sessionManagement(sm -> {
+                    sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                            ;
+                })
+                .csrf(cs -> {
+                    cs.disable();
+                })
+                .cors(crs -> {
+                    crs.disable();
+                })
+                .authorizeHttpRequests(auth-> {
+                    auth.requestMatchers("/api/v1/user/login").permitAll(); //"/api/v1/acquirers/create-user",
+                    auth.anyRequest().authenticated();
+                })
+                .authenticationProvider(authProvider).build();
+
+    }
+
+}

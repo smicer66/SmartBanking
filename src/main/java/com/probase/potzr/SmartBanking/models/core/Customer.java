@@ -1,13 +1,18 @@
 package com.probase.potzr.SmartBanking.models.core;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.probase.potzr.SmartBanking.deserializers.TimestampDeserializer;
 import com.probase.potzr.SmartBanking.models.enums.CustomerTitle;
 import com.probase.potzr.SmartBanking.models.enums.Gender;
 import com.probase.potzr.SmartBanking.models.enums.MaritalStatus;
+import com.probase.potzr.SmartBanking.serializers.JsonDateTimeSerializer;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -20,6 +25,8 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger customerId;
+    @Column(name = "userId", nullable = false)
+    private BigInteger userId;
     @Column(name = "firstName", nullable = false)
     private String firstName;
     @Column(name = "lastName", nullable = false)
@@ -46,4 +53,27 @@ public class Customer {
     private BigInteger currentAddressId;
     @Column(name = "identificationDocumentId", nullable = true)
     private BigInteger identificationDocumentId;
+
+    @Column(name = "createdAt", nullable = false)
+    @JsonSerialize(using = JsonDateTimeSerializer.class)
+    @JsonDeserialize(using = TimestampDeserializer.class)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updatedAt", nullable = false)
+    @JsonSerialize(using = JsonDateTimeSerializer.class)
+    @JsonDeserialize(using = TimestampDeserializer.class)
+    private LocalDateTime updatedAt;
+
+    @Column(name = "deletedAt", nullable = true)
+    @JsonSerialize(using = JsonDateTimeSerializer.class)
+    @JsonDeserialize(using = TimestampDeserializer.class)
+    private LocalDateTime deletedAt;
+
+
+    @PrePersist
+    public void onCreate()
+    {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
 }
