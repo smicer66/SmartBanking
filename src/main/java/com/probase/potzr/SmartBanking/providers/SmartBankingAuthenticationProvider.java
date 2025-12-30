@@ -104,6 +104,7 @@ public class SmartBankingAuthenticationProvider implements AuthenticationProvide
 
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
         UsernamePasswordAuthenticationToken r = new UsernamePasswordAuthenticationToken(us, password, authorities); // (4)
+        System.out.println("r subject..." + r.getPrincipal());
         return r;
 //        HttpHeaders headers = new HttpHeaders();
 //        headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);

@@ -4,7 +4,9 @@ import com.probase.potzr.SmartBanking.contract.ICoreBanking;
 import com.probase.potzr.SmartBanking.exceptions.ApplicationException;
 import com.probase.potzr.SmartBanking.models.core.ClientSetting;
 import com.probase.potzr.SmartBanking.models.enums.CoreBankingType;
+import com.probase.potzr.SmartBanking.models.requests.AddBankAccountRequest;
 import com.probase.potzr.SmartBanking.models.requests.BalanceInquiryRequest;
+import com.probase.potzr.SmartBanking.models.responses.account.AddBankAccountResponse;
 import com.probase.potzr.SmartBanking.models.responses.balanceinquiry.BalanceInquiryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,4 +38,8 @@ public class CoreBankingFactory {
         return new ArrayList<>(coreBankingMap.keySet());
     }
 
+    public AddBankAccountResponse getCustomerDetailByAccountNo(Collection<ClientSetting> clientSettings, CoreBankingType coreBankingType, AddBankAccountRequest addBankAccountRequest) {
+        ICoreBanking iCoreBanking =  this.coreBankingMap.get(coreBankingType);
+        return iCoreBanking.getCustomerDetailByAccountNo(clientSettings, addBankAccountRequest);
+    }
 }

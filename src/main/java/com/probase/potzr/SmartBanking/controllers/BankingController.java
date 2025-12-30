@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.annotations.ApiImplicitParam;
 
 @Controller
 @RestController
@@ -26,7 +27,10 @@ public class BankingController {
         return ResponseEntity.ok().body(balanceInquiryResponse);
     }
 
+
+    @CrossOrigin
     @RequestMapping(value = "/funds-transfer", method = RequestMethod.POST)
+    @ApiImplicitParam(name = "Authorization", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer <Token>")
     public ResponseEntity<FundsTransferResponse> doFundsTransfer(@RequestBody(required = true) FundsTransferRequest fundsTransferRequest) throws ApplicationException {
         FundsTransferResponse fundsTransferResponse= coreBankingService.doFundsTransfer(fundsTransferRequest);
 

@@ -22,6 +22,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -47,6 +52,7 @@ public class SecurityConfig{
         AuthenticationManagerBuilder authenticationManagerBuilder =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.authenticationProvider(authProvider);
+
         return authenticationManagerBuilder.build();
     }
 
@@ -71,22 +77,43 @@ public class SecurityConfig{
     @Bean
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception
     {
-        return http.sessionManagement(sm -> {
-                    sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                            ;
+        return http
+                .sessionManagement(sm -> {
+                    sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
                 })
+
+//                .apply(new JwtConfigurer(tokenProvider, userService))
                 .csrf(cs -> {
-                    cs.disable();
+                    cs.disable().apply(new JwtConfigurer(tokenProvider, userService));
                 })
+
                 .cors(crs -> {
-                    crs.disable();
+                    crs.disable().apply(new JwtConfigurer(tokenProvider, userService));
                 })
                 .authorizeHttpRequests(auth-> {
                     auth.requestMatchers("/api/v1/user/login").permitAll(); //"/api/v1/acquirers/create-user",
+                    //auth.requestMatchers( "/api/v1/banking/funds-transfer").access();
+                    auth.requestMatchers("/test/FCLiteWeb/FundTransferService/createContract").permitAll();
                     auth.anyRequest().authenticated();
+
+
                 })
-                .authenticationProvider(authProvider).build();
+                .authenticationProvider(authProvider)
+                .build();
 
     }
 
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }

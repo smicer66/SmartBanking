@@ -93,7 +93,7 @@ public class TokenProvider implements Serializable {
         System.out.println(">>>>>>>>>>>>>>>>>>>>");
         System.out.println(userDetails.getPrincipal());
         claims.put("user", userDetails.getPrincipal());
-        return doGenerateToken(claims, ((User)(userDetails.getPrincipal())).getEmailAddress());
+        return doGenerateToken(claims, ((User)(userDetails.getPrincipal())).getUsername());
     }
 
     //while creating the token -

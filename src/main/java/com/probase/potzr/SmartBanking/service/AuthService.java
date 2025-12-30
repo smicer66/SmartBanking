@@ -33,8 +33,8 @@ public class AuthService {
                     //                new PayAccessAuthenticationProvider()
 
                     new UsernamePasswordAuthenticationToken(
-                            loginRequest.getUsername(),
-                            loginRequest.getPassword()
+                        loginRequest.getUsername(),
+                        loginRequest.getPassword()
                     )
             );
 

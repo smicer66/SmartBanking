@@ -3,11 +3,16 @@ package com.probase.potzr.SmartBanking.impl;
 import com.probase.potzr.SmartBanking.contract.ICoreBanking;
 import com.probase.potzr.SmartBanking.exceptions.ApplicationException;
 import com.probase.potzr.SmartBanking.models.core.ClientSetting;
+import com.probase.potzr.SmartBanking.models.core.User;
 import com.probase.potzr.SmartBanking.models.enums.ClientSettingName;
 import com.probase.potzr.SmartBanking.models.enums.CoreBankingType;
+import com.probase.potzr.SmartBanking.models.requests.AddBankAccountRequest;
 import com.probase.potzr.SmartBanking.models.requests.BalanceInquiryRequest;
+import com.probase.potzr.SmartBanking.models.responses.account.AddBankAccountResponse;
 import com.probase.potzr.SmartBanking.models.responses.balanceinquiry.BalanceInquiryCasaResponse;
 import com.probase.potzr.SmartBanking.models.responses.balanceinquiry.BalanceInquiryResponse;
+import com.probase.potzr.SmartBanking.providers.TokenProvider;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +35,12 @@ public class FlexCubeCoreBanking implements ICoreBanking {
 
     @Autowired
     RestTemplate restTemplate;
+
+    @Autowired
+    TokenProvider tokenProvider;
+
+    @Autowired
+    private HttpServletRequest request;
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
@@ -53,6 +64,65 @@ public class FlexCubeCoreBanking implements ICoreBanking {
             String uri = UriComponentsBuilder
                     .fromUriString(clientSetting.get().getSettingValue())
                     .path(String.format("/%s", accountNumber))
+                    .build()
+                    .toString();
+
+            logger.info("Uri...{}", uri);
+
+            ResponseEntity<BalanceInquiryCasaResponse> response =
+                    restTemplate.exchange(uri, HttpMethod.GET, null,
+                            new ParameterizedTypeReference<BalanceInquiryCasaResponse>() {
+                            });
+
+            if (response.getBody() != null) {
+                BalanceInquiryCasaResponse balanceInquiryCasaResponse =  response.getBody();
+
+                BalanceInquiryResponse balanceInquiryResponse = new BalanceInquiryResponse();
+                balanceInquiryResponse.setCurrency(balanceInquiryCasaResponse.getCcy());
+                balanceInquiryResponse.setBankAccountNumber(balanceInquiryCasaResponse.getCustAcNo());
+                balanceInquiryResponse.setAccountBalance(BigDecimal.valueOf(Double.parseDouble(balanceInquiryCasaResponse.getAvailableBalance())));
+                balanceInquiryResponse.setCurrentBalance(BigDecimal.valueOf(Double.parseDouble(balanceInquiryCasaResponse.getAvailableBalance())));
+                balanceInquiryResponse.setCustomerNumber(balanceInquiryCasaResponse.getCustNo());
+                return balanceInquiryResponse;
+            }
+        } catch (RuntimeException e) {
+            throw new ApplicationException("Failed to retrieve balance inquiry", e);
+        }
+        return null;
+
+    }
+
+
+    @Override
+    public AddBankAccountResponse getCustomerDetailByAccountNo(Collection<ClientSetting> clientSettings, AddBankAccountRequest addBankAccountRequest) throws ApplicationException {
+
+        String accountNumber = addBankAccountRequest.getAccountNumber();
+        String bankCode = addBankAccountRequest.getBankCode();
+        String token = this.request.getHeader("Authorization").substring("Bearer ".length());
+        User user = tokenProvider.getUserFromToken(token);
+
+
+        BalanceInquiryRequest balanceInquiryRequest = new BalanceInquiryRequest();
+        balanceInquiryRequest.setBankCode(bankCode);
+        balanceInquiryRequest.setBankAccountNumber(accountNumber);
+        balanceInquiryRequest.setSourceIPAddress("127.0.0.1");
+        balanceInquiryRequest.setUserId(user.getUserId().toString());
+        BalanceInquiryResponse balanceInquiryResponse = this.getBalanceInquiry(clientSettings, balanceInquiryRequest);
+
+        String customerNumber = balanceInquiryResponse.getCustomerNumber();
+
+
+
+        try {
+            String endppoint = null;
+            Optional<ClientSetting> clientSetting = clientSettings.stream().filter(cs -> {
+                return cs.getSettingName().equals(ClientSettingName.CUSTOMER_INQUIRY_ENDPOINT.name());
+            }).findFirst();
+
+            //http://(IP):(Port)/AccountService/v12.3/accounts /casaBalance/{accountNumber}
+            String uri = UriComponentsBuilder
+                    .fromUriString(clientSetting.get().getSettingValue())
+                    .path(String.format("/%s", customerNumber))
                     .build()
                     .toString();
 
