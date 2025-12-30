@@ -14,5 +14,6 @@ public class BalanceInquiryCasaResponse {
     private String currentBalance;
     private String blockedAmount;
     private String custAcNo;
+    private String custAcDescription;
 
 }

@@ -15,5 +15,6 @@ public class BalanceInquiryResponse extends DummyResponse {
     private BigDecimal accountBalance;
     private BigDecimal currentBalance;
     private String customerNumber;
+    private String bankAccountName;
 
 }

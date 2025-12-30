@@ -2,6 +2,7 @@ package com.probase.potzr.SmartBanking.factory;
 
 import com.probase.potzr.SmartBanking.contract.ICoreBanking;
 import com.probase.potzr.SmartBanking.exceptions.ApplicationException;
+import com.probase.potzr.SmartBanking.models.core.Client;
 import com.probase.potzr.SmartBanking.models.core.ClientSetting;
 import com.probase.potzr.SmartBanking.models.enums.CoreBankingType;
 import com.probase.potzr.SmartBanking.models.requests.AddBankAccountRequest;
@@ -38,8 +39,8 @@ public class CoreBankingFactory {
         return new ArrayList<>(coreBankingMap.keySet());
     }
 
-    public AddBankAccountResponse getCustomerDetailByAccountNo(Collection<ClientSetting> clientSettings, CoreBankingType coreBankingType, AddBankAccountRequest addBankAccountRequest) {
+    public AddBankAccountResponse getCustomerDetailByAccountNo(Client client, Collection<ClientSetting> clientSettings, CoreBankingType coreBankingType, AddBankAccountRequest addBankAccountRequest) {
         ICoreBanking iCoreBanking =  this.coreBankingMap.get(coreBankingType);
-        return iCoreBanking.getCustomerDetailByAccountNo(clientSettings, addBankAccountRequest);
+        return iCoreBanking.getCustomerDetailByAccountNo(client, clientSettings, addBankAccountRequest);
     }
 }

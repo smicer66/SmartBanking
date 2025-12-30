@@ -63,7 +63,7 @@ public class CoreBankingService {
 
         Client client = clientRepository.getClientByBankCode(bankCode);
         Collection<ClientSetting> clientSettings = clientSettingRepository.getClientSettingByClientId(client.getClientId());
-        return coreBankingFactory.getCustomerDetailByAccountNo(clientSettings, coreBankingType, addBankAccountRequest);//.getCoreBankingType().name();
+        return coreBankingFactory.getCustomerDetailByAccountNo(client, clientSettings, coreBankingType, addBankAccountRequest);//.getCoreBankingType().name();
     }
 
 }

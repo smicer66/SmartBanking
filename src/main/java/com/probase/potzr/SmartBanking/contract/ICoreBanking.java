@@ -2,6 +2,7 @@ package com.probase.potzr.SmartBanking.contract;
 
 
 import com.probase.potzr.SmartBanking.exceptions.ApplicationException;
+import com.probase.potzr.SmartBanking.models.core.Client;
 import com.probase.potzr.SmartBanking.models.core.ClientSetting;
 import com.probase.potzr.SmartBanking.models.enums.CoreBankingType;
 import com.probase.potzr.SmartBanking.models.requests.AddBankAccountRequest;
@@ -16,5 +17,5 @@ public interface ICoreBanking {
 
     BalanceInquiryResponse getBalanceInquiry(Collection<ClientSetting> clientSettings, BalanceInquiryRequest balanceInquiryRequest) throws ApplicationException;
 
-    AddBankAccountResponse getCustomerDetailByAccountNo(Collection<ClientSetting> clientSettings, AddBankAccountRequest addBankAccountRequest);
+    AddBankAccountResponse getCustomerDetailByAccountNo(Client client, Collection<ClientSetting> clientSettings, AddBankAccountRequest addBankAccountRequest) throws ApplicationException;
 }

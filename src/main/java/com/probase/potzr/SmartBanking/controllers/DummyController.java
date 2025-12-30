@@ -1,8 +1,10 @@
 package com.probase.potzr.SmartBanking.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.probase.potzr.SmartBanking.exceptions.ApplicationException;
 import com.probase.potzr.SmartBanking.models.requests.FundsTransferRequest;
 import com.probase.potzr.SmartBanking.models.responses.dummy.CasaAccountBalance;
+import com.probase.potzr.SmartBanking.models.responses.dummy.FlexCubeCustomerDetailCasaResponse;
 import com.probase.potzr.SmartBanking.models.responses.fundstransfer.FundsTransferResponse;
 import com.probase.potzr.SmartBanking.service.DummyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +48,7 @@ public class DummyController {
 
         return
                 ResponseEntity.ok().body(
-                    new CasaAccountBalance(randomBalance, customerNo, casaAccountCCY, openingBalance, randomBalance, blockedAmount, custAcNo)
+                    new CasaAccountBalance("John Doe", randomBalance, customerNo, casaAccountCCY, openingBalance, randomBalance, blockedAmount, custAcNo)
                 );
 
     }
@@ -64,5 +66,13 @@ public class DummyController {
                         dDummyService.doFundsTransfer(fundsTransferRequest)
                 );
 
+    }
+
+    @RequestMapping("/FCLiteWeb/Customer/get/")
+    public ResponseEntity<FlexCubeCustomerDetailCasaResponse> getCustomerDetailsByCustomerNo(@PathVariable(required = true) String custmerNumber) throws JsonProcessingException {
+        return
+            ResponseEntity.ok().body(
+                    dDummyService.getCustomerDetailsByCustomerNo(custmerNumber)
+            );
     }
 }

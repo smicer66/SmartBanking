@@ -17,8 +17,9 @@ public class CasaAccountBalance extends DummyResponse{
     private BigDecimal currentBalance;
     private BigDecimal blockedAmount;
     private String custAcNo;
+    private String custAcDesc;
 
-    public CasaAccountBalance(BigDecimal availableBalance, String custNo, String ccy, BigDecimal openingBalance, BigDecimal currentBalance, BigDecimal blockedAmount, String custAcNo) {
+    public CasaAccountBalance(String custAcDesc, BigDecimal availableBalance, String custNo, String ccy, BigDecimal openingBalance, BigDecimal currentBalance, BigDecimal blockedAmount, String custAcNo) {
         this.availableBalance = availableBalance;
         this.custNo = custNo;
         this.ccy = ccy;
@@ -26,5 +27,6 @@ public class CasaAccountBalance extends DummyResponse{
         this.currentBalance = currentBalance;
         this.blockedAmount = blockedAmount;
         this.custAcNo = custAcNo;
+        this.custAcDesc = custAcDesc;
     }
 }
