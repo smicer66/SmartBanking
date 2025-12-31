@@ -2,8 +2,10 @@ package com.probase.potzr.SmartBanking.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.probase.potzr.SmartBanking.models.core.Token;
 import com.probase.potzr.SmartBanking.models.core.User;
 import com.probase.potzr.SmartBanking.models.enums.Permission;
+import com.probase.potzr.SmartBanking.models.responses.account.AddBankAccountResponse;
 import com.probase.potzr.SmartBanking.models.responses.user.AuthResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.mindrot.jbcrypt.BCrypt;
@@ -274,16 +276,27 @@ public class TokenService {
         }
 
         try {
+            LOG.info(">>>>>: " + 1);
             JWT jwt = JWTParser.parse(token);
+            LOG.info(">>>>>: " + 2);
+            LOG.info(jwt.getClass().getCanonicalName());
             if(jwt instanceof EncryptedJWT) {
+                LOG.info(">>>>>: " + 3);
                 EncryptedJWT jwe = (EncryptedJWT) jwt;
+                LOG.info(">>>>>: " + 4);
                 RSAKey clientJWK = getJSONWebKey(clientPKCS);
+                LOG.info(">>>>>: " + 5);
                 JWEDecrypter decrypter = new RSADecrypter(clientJWK);
+                LOG.info(">>>>>: " + 6);
                 jwe.decrypt(decrypter);
+                LOG.info(">>>>>: " + 7);
                 SignedJWT jws = jwe.getPayload().toSignedJWT();
+                LOG.info(">>>>>: " + 8);
 
                 RSAKey serverJWK = getPublicKey(serverCertificate);
+                LOG.info(">>>>>: " + 9);
                 RSASSAVerifier signVerifier = new RSASSAVerifier(serverJWK);
+                LOG.info(">>>>>: " + 10);
                 if(jws.verify(signVerifier)) {
                     JWTClaimsSet claims = jws.getJWTClaimsSet();
                     Date expiryTime = claims.getExpirationTime();
@@ -300,10 +313,37 @@ public class TokenService {
                     }
                 }
             }
+            else if(jwt instanceof SignedJWT) {
+                LOG.info(">>>>>: " + 3);
+                SignedJWT jws = (SignedJWT) jwt;
+
+
+                RSAKey serverJWK = getPublicKey(serverCertificate);
+                LOG.info(">>>>>: " + 9);
+
+                RSASSAVerifier signVerifier = new RSASSAVerifier(serverJWK);
+                LOG.info(">>>>>: " + 10);
+
+                JWTClaimsSet claims = jws.getJWTClaimsSet();
+                Date expiryTime = claims.getExpirationTime();
+                LOG.info("Expiry time = " + expiryTime.toString());
+                if(expiryTime.after(new Date())) {
+                    Object userString = claims.getClaim("user");
+                    String uString = String.valueOf(userString);
+                    LOG.info("uString = " + uString);
+                    ObjectMapper mapper = new ObjectMapper();
+                    user = mapper.readValue(uString, User.class);
+                    LOG.info("Token validated for user = " + uString);
+                    LOG.info("Token validated for user = {}" + user);
+                    return user;
+                }
+
+            }
         }
         catch(ParseException | JOSEException ex) {
             LOG.error(ex.toString());
         }
         return null;
     }
+
 }

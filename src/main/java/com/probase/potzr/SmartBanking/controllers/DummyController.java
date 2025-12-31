@@ -68,11 +68,14 @@ public class DummyController {
 
     }
 
-    @RequestMapping("/FCLiteWeb/Customer/get/")
-    public ResponseEntity<FlexCubeCustomerDetailCasaResponse> getCustomerDetailsByCustomerNo(@PathVariable(required = true) String custmerNumber) throws JsonProcessingException {
+    @RequestMapping("/FCLiteWeb/Customer/get/{customerNumber}/{bankCode}")
+    public ResponseEntity<FlexCubeCustomerDetailCasaResponse> getCustomerDetailsByCustomerNo(
+            @PathVariable(required = true) String customerNumber,
+            @PathVariable(required = true) String bankCode
+     ) throws JsonProcessingException {
         return
             ResponseEntity.ok().body(
-                    dDummyService.getCustomerDetailsByCustomerNo(custmerNumber)
+                    dDummyService.getCustomerDetailsByCustomerNo(customerNumber, bankCode)
             );
     }
 }

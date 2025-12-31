@@ -39,8 +39,10 @@ public class CoreBankingFactory {
         return new ArrayList<>(coreBankingMap.keySet());
     }
 
-    public AddBankAccountResponse getCustomerDetailByAccountNo(Client client, Collection<ClientSetting> clientSettings, CoreBankingType coreBankingType, AddBankAccountRequest addBankAccountRequest) {
+    public AddBankAccountResponse addBankAccountToCustomer(Client client, Collection<ClientSetting> clientSettings, CoreBankingType coreBankingType, AddBankAccountRequest addBankAccountRequest) throws ApplicationException {
         ICoreBanking iCoreBanking =  this.coreBankingMap.get(coreBankingType);
-        return iCoreBanking.getCustomerDetailByAccountNo(client, clientSettings, addBankAccountRequest);
+        return iCoreBanking.addBankAccountToCustomer(client, clientSettings, addBankAccountRequest);
     }
+
+
 }

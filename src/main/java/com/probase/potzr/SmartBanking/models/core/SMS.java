@@ -4,7 +4,6 @@ package com.probase.potzr.SmartBanking.models.core;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.probase.potzr.SmartBanking.deserializers.TimestampDeserializer;
-import com.probase.potzr.SmartBanking.models.enums.TokenType;
 import com.probase.potzr.SmartBanking.serializers.JsonDateTimeSerializer;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -14,23 +13,22 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tokens")
 @Getter
 @Setter
-public class Token {
-
+@Table(name = "sms_messages")
+public class SMS {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger tokenId;
+    private BigInteger smsId;
 
-    @Column(name = "token", nullable = false)
-    private String token;
+    @Column(name = "smsMessage", nullable = false, length = 150)
+    private String smsMessage;
 
-    @Column(name = "tokenType", nullable = false)
-    private TokenType tokenType;
+    @Column(name="mobileRecipient", nullable = false, length = 11)
+    private String mobileRecipient;
 
-    @Column(name = "expiredAt", nullable = false)
-    private LocalDateTime expiredAt;
+    @Column(name="isSent", nullable = false)
+    private Boolean isSent;
 
     @Column(name = "createdAt", nullable = false)
     @JsonSerialize(using = JsonDateTimeSerializer.class)
@@ -46,16 +44,6 @@ public class Token {
     @JsonSerialize(using = JsonDateTimeSerializer.class)
     @JsonDeserialize(using = TimestampDeserializer.class)
     private LocalDateTime deletedAt;
-
-    @Column(name = "usedAt", nullable = true)
-    private LocalDateTime usedAt;
-
-    @Column(name = "tokenOwnedByUserId", nullable = true)
-    private BigInteger tokenOwnedByUserId;
-
-    @Lob
-    @Column(name = "data", nullable = false)
-    private String data;
 
     @PrePersist
     public void onCreate()

@@ -1,20 +1,24 @@
 package com.probase.potzr.SmartBanking.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.probase.potzr.SmartBanking.contract.ICoreBanking;
 import com.probase.potzr.SmartBanking.exceptions.ApplicationException;
 import com.probase.potzr.SmartBanking.models.core.*;
+import com.probase.potzr.SmartBanking.models.dto.BankAccountDTO;
 import com.probase.potzr.SmartBanking.models.enums.ClientSettingName;
 import com.probase.potzr.SmartBanking.models.enums.CoreBankingType;
 import com.probase.potzr.SmartBanking.models.enums.TokenType;
 import com.probase.potzr.SmartBanking.models.requests.AddBankAccountRequest;
 import com.probase.potzr.SmartBanking.models.requests.BalanceInquiryRequest;
 import com.probase.potzr.SmartBanking.models.responses.account.AddBankAccountResponse;
-import com.probase.potzr.SmartBanking.models.responses.account.CustomerDetailResponse;
 import com.probase.potzr.SmartBanking.models.responses.balanceinquiry.BalanceInquiryCasaResponse;
 import com.probase.potzr.SmartBanking.models.responses.balanceinquiry.BalanceInquiryResponse;
 import com.probase.potzr.SmartBanking.models.responses.dummy.FlexCubeCustomerDetailCasaResponse;
 import com.probase.potzr.SmartBanking.providers.TokenProvider;
+import com.probase.potzr.SmartBanking.repositories.core.ISMSRepository;
 import com.probase.potzr.SmartBanking.repositories.core.ITokenRepository;
+import com.probase.potzr.SmartBanking.service.SMSKafkaService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -22,6 +26,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -47,6 +53,12 @@ public class FlexCubeCoreBanking implements ICoreBanking {
 
     @Autowired
     ITokenRepository tokenRepository;
+
+    @Autowired
+    ISMSRepository smsRepository;
+
+    @Autowired
+    SMSKafkaService smsKafkaService;
 
     @Autowired
     private HttpServletRequest request;
@@ -97,6 +109,7 @@ public class FlexCubeCoreBanking implements ICoreBanking {
                 balanceInquiryResponse.setCurrentBalance(BigDecimal.valueOf(Double.parseDouble(balanceInquiryCasaResponse.getAvailableBalance())));
                 balanceInquiryResponse.setCustomerNumber(balanceInquiryCasaResponse.getCustNo());
                 balanceInquiryResponse.setBankAccountName(balanceInquiryCasaResponse.getCustAcDescription());
+                System.out.println(">>>>>>>>>>>balanceInquiryCasaResponse.getCustAcDescription() .. " + balanceInquiryCasaResponse.getCustAcDescription());
                 return balanceInquiryResponse;
             }
         } catch (RuntimeException e) {
@@ -108,12 +121,14 @@ public class FlexCubeCoreBanking implements ICoreBanking {
 
 
     @Override
-    public AddBankAccountResponse getCustomerDetailByAccountNo(Client client, Collection<ClientSetting> clientSettings, AddBankAccountRequest addBankAccountRequest) throws ApplicationException {
+    public AddBankAccountResponse addBankAccountToCustomer(Client client, Collection<ClientSetting> clientSettings, AddBankAccountRequest addBankAccountRequest) throws ApplicationException {
 
+        ObjectMapper objectMapper = new ObjectMapper();
         String accountNumber = addBankAccountRequest.getAccountNumber();
         String bankCode = addBankAccountRequest.getBankCode();
         String jwtToken = this.request.getHeader("Authorization").substring("Bearer ".length());
         User user = tokenProvider.getUserFromToken(jwtToken);
+
 
 
         BalanceInquiryRequest balanceInquiryRequest = new BalanceInquiryRequest();
@@ -124,6 +139,7 @@ public class FlexCubeCoreBanking implements ICoreBanking {
         BalanceInquiryResponse balanceInquiryResponse = this.getBalanceInquiry(clientSettings, balanceInquiryRequest);
 
         String customerNumber = balanceInquiryResponse.getCustomerNumber();
+        System.out.println(balanceInquiryResponse.getBankAccountName());
 
 
 
@@ -142,23 +158,39 @@ public class FlexCubeCoreBanking implements ICoreBanking {
 
             logger.info("Uri...{}", uri);
 
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer "+jwtToken);
+
+            HttpEntity entity = new HttpEntity(null, headers);
             ResponseEntity<FlexCubeCustomerDetailCasaResponse> response =
-                    restTemplate.exchange(uri, HttpMethod.GET, null,
+                    restTemplate.exchange(uri, HttpMethod.GET, entity,
                             new ParameterizedTypeReference<FlexCubeCustomerDetailCasaResponse>() {
                             });
 
             if (response.getBody() != null) {
                 FlexCubeCustomerDetailCasaResponse flexCubeCustomerDetailCasaResponse =  response.getBody();
 
-                BankAccount bankAccount = new BankAccount();
-                bankAccount.setBankCode(bankCode);
-                bankAccount.setBankName(client.getClientName());
-                bankAccount.setBankAccountNumber(balanceInquiryResponse.getBankAccountNumber());
-                bankAccount.setBranchCode(flexCubeCustomerDetailCasaResponse.getBRANCH_CODE());
-                bankAccount.setBankAccountName(balanceInquiryResponse.getBankAccountName());
+                BankAccountDTO bankAccountDTO = new BankAccountDTO();
+                bankAccountDTO.setBankCode(bankCode);
+                bankAccountDTO.setBankName(client.getClientName());
+                bankAccountDTO.setBankAccountNumber(balanceInquiryResponse.getBankAccountNumber());
+                bankAccountDTO.setBranchCode(flexCubeCustomerDetailCasaResponse.getBRANCH_CODE());
+                bankAccountDTO.setBankAccountName(balanceInquiryResponse.getBankAccountName());
+                bankAccountDTO.setFirstName(flexCubeCustomerDetailCasaResponse.getFIRST_NAME());
+                bankAccountDTO.setLastName(flexCubeCustomerDetailCasaResponse.getLAST_NAME());
+                bankAccountDTO.setDateOfBirth(flexCubeCustomerDetailCasaResponse.getDATE_OF_BIRTH());
+                bankAccountDTO.setCountryOfOrigin(flexCubeCustomerDetailCasaResponse.getNATIONALITY());
+                bankAccountDTO.setGender(flexCubeCustomerDetailCasaResponse.getGENDER());
+                bankAccountDTO.setAddressLine1(flexCubeCustomerDetailCasaResponse.getADDRESS_LINE1());
+                bankAccountDTO.setAddressLine2(flexCubeCustomerDetailCasaResponse.getADDRESS_LINE2());
+                bankAccountDTO.setAddressLine3(flexCubeCustomerDetailCasaResponse.getADDRESS_LINE3());
+                bankAccountDTO.setAddressLine4(flexCubeCustomerDetailCasaResponse.getADDRESS_LINE4());
+                bankAccountDTO.setAddressCountry(flexCubeCustomerDetailCasaResponse.getADDRESS_COUNTRY());
+                bankAccountDTO.setEmailAddress(flexCubeCustomerDetailCasaResponse.getEMAIL());
+                bankAccountDTO.setMaritalStatus(flexCubeCustomerDetailCasaResponse.getMARITAL_STATUS());
 
                 AddBankAccountResponse addBankAccountResponse = new AddBankAccountResponse();
-                addBankAccountResponse.setBankAccount(bankAccount);
+                addBankAccountResponse.setBankAccountDTO(bankAccountDTO);
                 addBankAccountResponse.setStatus(0);
                 addBankAccountResponse.setMessage("Account validated successfully");
 
@@ -167,15 +199,31 @@ public class FlexCubeCoreBanking implements ICoreBanking {
                 token.setTokenOwnedByUserId(user.getUserId());
                 token.setToken(RandomStringUtils.randomNumeric(6));
                 token.setExpiredAt(LocalDateTime.now().plusHours(userAccountTokenValidPeriod));
-                token.setTokenType(TokenType.SIGNUP);
+                token.setTokenType(TokenType.BANK_ACCOUNT_VALIDATION);
+                token.setData(
+                        objectMapper.writeValueAsString(addBankAccountResponse)
+                );
                 tokenRepository.save(token);
+
+
+                SMS sms = new SMS();
+                sms.setSmsMessage("Hello from SmartBanking,\nEnter the One-Time Password " + token.getToken() + " to confirm you own the bank account you have provided.");
+                sms.setIsSent(false);
+                sms.setMobileRecipient(user.getMobileNumber());
+                smsRepository.save(sms);
+
+                smsKafkaService.saveSMSToKafkaQueue(sms);
 
                 return addBankAccountResponse;
             }
         } catch (RuntimeException e) {
             throw new ApplicationException("Failed to retrieve balance inquiry", e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
         return null;
 
     }
+
+
 }

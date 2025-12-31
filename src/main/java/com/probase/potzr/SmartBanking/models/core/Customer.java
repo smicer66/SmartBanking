@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -38,16 +39,16 @@ public class Customer {
     @Column(name = "mobileNumber", nullable = false)
     private String mobileNumber;
     @Column(name = "dateOfBirth", nullable = false)
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     @Column(name = "countryOfOrigin", nullable = false)
-    private Date countryOfOrigin;
+    private String countryOfOrigin;
     @Column(name = "countryOfOriginAlfa3Code", nullable = false)
     private String countryOfOriginAlfa3Code;
     @Column(name = "gender", nullable = false)
     private Gender gender;
     @Column(name = "maritalStatus", nullable = false)
     private MaritalStatus maritalStatus;
-    @Column(name = "title", nullable = false)
+    @Column(name = "title", nullable = true)
     private CustomerTitle title;
     @Column(name = "currentAddressId", nullable = true)
     private BigInteger currentAddressId;

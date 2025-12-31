@@ -94,7 +94,7 @@ public class SecurityConfig{
                 .authorizeHttpRequests(auth-> {
                     auth.requestMatchers("/api/v1/user/login").permitAll(); //"/api/v1/acquirers/create-user",
                     //auth.requestMatchers( "/api/v1/banking/funds-transfer").access();
-                    auth.requestMatchers("/test/FCLiteWeb/FundTransferService/createContract").permitAll();
+                    auth.requestMatchers("/test/**").permitAll();
                     auth.anyRequest().authenticated();
 
 

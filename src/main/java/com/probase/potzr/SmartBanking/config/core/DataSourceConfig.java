@@ -26,7 +26,7 @@ import java.util.Map;
         entityManagerFactoryRef = "entityManagerFactory",
         basePackageClasses = {Client.class, ClientSetting.class, Transaction.class,
                 Address.class, Customer.class, IdentificationDocument.class, Address.class,
-                User.class, Token.class
+                User.class, Token.class, SMS.class, BankAccount.class
         },
         transactionManagerRef = "transactionManager"
 )

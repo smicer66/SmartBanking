@@ -71,8 +71,9 @@ public class DummyService {
         return fundsTransferResponse;
     }
 
-    public FlexCubeCustomerDetailCasaResponse getCustomerDetailsByCustomerNo(String custmerNumber) throws JsonProcessingException {
+    public FlexCubeCustomerDetailCasaResponse getCustomerDetailsByCustomerNo(String custmerNumber, String bankCode) throws JsonProcessingException {
         //FlexCubeCustomerDetailCasaResponse
+        Client client = clientRepository.getClientByBankCode(bankCode);
         User user = tokenService.getUserFromToken(this.httpServletRequest);
 
         FlexCubeCustomerDetailCasaResponse flexCubeCustomerDetailCasaResponse = new FlexCubeCustomerDetailCasaResponse();
@@ -93,6 +94,8 @@ public class DummyService {
         flexCubeCustomerDetailCasaResponse.setPHONE_NO("08094073705");
         flexCubeCustomerDetailCasaResponse.setMARITAL_STATUS(MaritalStatus.SINGLE.name());
         flexCubeCustomerDetailCasaResponse.setIS_VERIFIED("Y");
+        flexCubeCustomerDetailCasaResponse.setBRANCH_CODE(client.getBankCode());
+        flexCubeCustomerDetailCasaResponse.setNATIONALITY("ZM");
 
         return flexCubeCustomerDetailCasaResponse;
 

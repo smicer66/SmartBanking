@@ -30,14 +30,8 @@ public class Address {
     private String addressLine3;
     @Column(name = "addressLine4", nullable = true)
     private String addressLine4;
-    @Column(name = "city", nullable = false)
-    private String city;
     @Column(name = "country", nullable = false)
     private String country;
-    @Column(name = "postalCode", nullable = true)
-    private String postalCode;
-    @Column(name = "state", nullable = false)
-    private String state;
 
     @Column(name = "createdAt", nullable = false)
     @JsonSerialize(using = JsonDateTimeSerializer.class)
@@ -53,4 +47,11 @@ public class Address {
     @JsonSerialize(using = JsonDateTimeSerializer.class)
     @JsonDeserialize(using = TimestampDeserializer.class)
     private LocalDateTime deletedAt;
+
+    @PrePersist
+    public void onCreate()
+    {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
 }
