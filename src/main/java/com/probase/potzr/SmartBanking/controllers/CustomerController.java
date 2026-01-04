@@ -3,10 +3,14 @@ package com.probase.potzr.SmartBanking.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.probase.potzr.SmartBanking.exceptions.ApplicationException;
 import com.probase.potzr.SmartBanking.models.requests.AddBankAccountRequest;
+import com.probase.potzr.SmartBanking.models.requests.CustomerIdentificationRequest;
+import com.probase.potzr.SmartBanking.models.responses.CustomerIdentificationResponse;
 import com.probase.potzr.SmartBanking.models.responses.account.AddBankAccountResponse;
 import com.probase.potzr.SmartBanking.service.CoreBankingService;
 import com.probase.potzr.SmartBanking.service.TokenService;
+import com.probase.potzr.SmartBanking.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,6 +25,8 @@ public class CustomerController {
 
     @Autowired
     private CoreBankingService coreBankingService;
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private TokenService tokenService;
@@ -54,13 +60,22 @@ public class CustomerController {
 
 
     @RequestMapping(value = "/update-customer-identification", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UpdateCustomerIdentificationResponse> updateCustomerIdentification(UpdateCustomerIdentificationRequest updateCustomerIdentificationRequest)
+    public ResponseEntity<CustomerIdentificationResponse> updateCustomerIdentification(
+            CustomerIdentificationRequest customerIdentificationRequest
+    )
     {
         try {
-            AddBankAccountResponse validateTokenResponse = coreBankingService.
-                    confirmAddAccount(token);
-            return ResponseEntity.ok().body(validateTokenResponse);
-        } catch (ApplicationException | JsonProcessingException e) {
+            CustomerIdentificationResponse customerIdentificationResponse = userService.
+                    updateCustomerIdentification(customerIdentificationRequest);
+            if(customerIdentificationResponse.getStatusCode().equals("0"))
+                ResponseEntity.ok().body(customerIdentificationResponse);
+            else if(customerIdentificationResponse.getStatusCode().equals("1"))
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(customerIdentificationResponse);
+            else if(customerIdentificationResponse.getStatusCode().equals("2"))
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(customerIdentificationResponse);
+
+            return ResponseEntity.ok().body(customerIdentificationResponse);
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }

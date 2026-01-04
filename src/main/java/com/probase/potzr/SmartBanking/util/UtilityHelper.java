@@ -1,0 +1,144 @@
+package com.probase.potzr.SmartBanking.util;
+
+import com.probase.potzr.SmartBanking.models.enums.PaymentCardIssuer;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.mindrot.jbcrypt.BCrypt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.crypto.Cipher;
+import java.io.*;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.*;
+import java.security.spec.RSAPublicKeySpec;
+import java.util.*;
+import java.util.regex.Pattern;
+
+public class UtilityHelper {
+
+    private final static Logger logger = LoggerFactory.getLogger(UtilityHelper.class);
+    private static final List<String> contentTypes = Arrays.asList("image/png", "image/jpeg", "image/gif");
+    private static String visaPanReg = "^4[0-9]{6,}$";
+    private static String mastercardPanReg = "^5[1-5][0-9]{5,}|222[1-9][0-9]{3,}|22[3-9][0-9]{4,}|2[3-6][0-9]{5,}|27[01][0-9]{4,}|2720[0-9]{3,}$";
+    private static String americanExpressPanReg = "^3[47][0-9]{5,}$";
+    private static String dinersClubPanReg = "^3(?:0[0-5]|[68][0-9])[0-9]{4,}$";
+    private static String discoveryPanReg = "^6(?:011|5[0-9]{2})[0-9]{3,}$";
+    private static String JCBPanReg = "^(?:2131|1800|35[0-9]{3})[0-9]{3,}$";
+
+    public static String generateBCryptPassword(String password)
+    {
+        String generatedSecuredPasswordHash = BCrypt.hashpw(password, BCrypt.gensalt(12));
+        return generatedSecuredPasswordHash;
+    }
+
+
+    public static String get_SHA_512_SecurePassword(String passwordToHash, byte[] salt) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-512");
+        md.update(salt);
+        byte[] hashedPassword = md.digest(passwordToHash.getBytes(StandardCharsets.UTF_8));
+        String s = new String(hashedPassword, StandardCharsets.UTF_8);
+        return s;
+    }
+
+    public static String uploadFile(MultipartFile identificationDocumentPath, String fileDestinationPath) throws IOException {
+        logger.info("identificationDocumentPath ...{}", identificationDocumentPath.getSize());
+        byte[] fileBytes = identificationDocumentPath.getBytes();
+        String pathName = identificationDocumentPath.getOriginalFilename();
+        String newFileName = RandomStringUtils.randomAlphanumeric(16);
+        String newFileNameExt = pathName.substring(pathName.lastIndexOf(".") + 1);
+        File destinationFile = new File(fileDestinationPath + File.separator + newFileName + "." + newFileNameExt);
+        BufferedOutputStream is = new BufferedOutputStream(new FileOutputStream(destinationFile));
+        is.write(fileBytes);
+        is.close();
+
+        return newFileName + "." + newFileNameExt;
+    }
+
+    public static String getAuthData(String version, String pan, String pin, String expiryDate, String cvv2) throws Exception {
+        String authData = "";
+        String authDataCipher = version + "Z" + pan + "Z" + pin + "Z" + expiryDate + "Z" + cvv2;
+        // The Modulus and Public Exponent will be supplied by Interswitch. please ask for one
+        String modulus = "9c7b3ba621a26c4b02f48cfc07ef6ee0aed8e12b4bd11c5cc0abf80d5206be69e1891e60fc88e2d565e2fabe4d0cf630e318a6c721c3ded718d0c530cdf050387ad0a30a336899bbda877d0ec7c7c3ffe693988bfae0ffbab71b25468c7814924f022cb5fda36e0d2c30a7161fa1c6fb5fbd7d05adbef7e68d48f8b6c5f511827c4b1c5ed15b6f20555affc4d0857ef7ab2b5c18ba22bea5d3a79bd1834badb5878d8c7a4b19da20c1f62340b1f7fbf01d2f2e97c9714a9df376ac0ea58072b2b77aeb7872b54a89667519de44d0fc73540beeaec4cb778a45eebfbefe2d817a8a8319b2bc6d9fa714f5289ec7c0dbc43496d71cf2a642cb679b0fc4072fd2cf";
+        String publicExponent = "010001";
+        Security.addProvider(new BouncyCastleProvider());
+        RSAPublicKeySpec publicKeyspec = new RSAPublicKeySpec(new BigInteger(modulus, 16), new BigInteger(publicExponent, 16));
+        KeyFactory factory = KeyFactory.getInstance("RSA"); //, "JHBCI");
+        PublicKey publicKey = factory.generatePublic(publicKeyspec);
+        Cipher encryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", "BC");
+        encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        byte[] authDataBytes = encryptCipher.doFinal(authDataCipher.getBytes("UTF8"));
+        authData = Base64.getEncoder().encodeToString(authDataBytes).replaceAll("\\r|\\n", "");
+        return authData;
+    }
+
+
+    public static boolean checkIfImage(MultipartFile file)
+    {
+        String fileContentType = file.getContentType();
+        if(contentTypes.contains(fileContentType)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean checkValidEnumValue(String enumName, Class class_) {
+        Object[] objectArray = class_.getEnumConstants();
+        String[] stringArray = Arrays.copyOf(objectArray, objectArray.length, String[].class);
+        List arrayList = Arrays.asList(stringArray);
+
+        if(!arrayList.contains(enumName))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static ArrayList<String> getCountryList() {
+        String[] isoCountries = Locale.getISOCountries();
+        ArrayList<String> countryList = new ArrayList<String>();
+        for(String isoCountry : isoCountries)
+        {
+            Locale obj = new Locale("", isoCountry);
+            countryList.add(obj.getDisplayCountry().toUpperCase());
+        }
+
+        countryList.sort(String::compareToIgnoreCase);
+
+        return countryList;
+    }
+
+
+
+    public static PaymentCardIssuer getCardTypeFromBin(String bin)
+    {
+        if(bin.matches(visaPanReg))
+            return  PaymentCardIssuer.VISA;
+        else if(bin.matches(mastercardPanReg))
+            return  PaymentCardIssuer.MASTERCARD;
+        else if(bin.matches(americanExpressPanReg))
+            return  PaymentCardIssuer.AMERICAN_EXPRESS;
+        else if(bin.matches(dinersClubPanReg))
+            return  PaymentCardIssuer.DINERS_CLUB;
+        else if(bin.matches(discoveryPanReg))
+            return  PaymentCardIssuer.DISCOVERY;
+        else if(bin.matches(JCBPanReg))
+            return  PaymentCardIssuer.JCB;
+        else
+            return PaymentCardIssuer.UNKNOWN;
+
+    }
+
+    public static boolean validateEmailAddress(String emailAddress) {
+        String regexPattern = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+
+        return Pattern.compile(regexPattern)
+                .matcher(emailAddress)
+                .matches();
+
+    }
+}

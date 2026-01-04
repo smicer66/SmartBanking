@@ -25,6 +25,7 @@ public class FundsTransferFactory {
     @Autowired
     public FundsTransferFactory(List<IFundsTransferClient> fundsTransferClientList)
     {
+        System.out.println("size1 = " + fundsTransferClientList.size());
         fundsTransferClientList.forEach(ftc -> {
             fundsTransferClientMap.put(ftc.getFundsTransferType(), ftc);
         });

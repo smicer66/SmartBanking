@@ -98,6 +98,31 @@
 			<artifactId>kafka-streams</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.mastercard.developer</groupId>
+			<artifactId>oauth1-signer</artifactId>
+			<version>1.5.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.54</version>
+		</dependency>
+		<dependency>
+			<groupId>com.mastercard.developer</groupId>
+			<artifactId>oauth1-signer</artifactId>
+			<version>1.5.6</version>
+		</dependency>
+		<dependency>
+			<groupId>com.mastercard.developer</groupId>
+			<artifactId>client-encryption</artifactId>
+			<version>1.8.8</version>
+		</dependency>
+		<dependency>
+			<groupId>com.mastercard.api</groupId>
+			<artifactId>sdk-api-core</artifactId>
+			<version>1.4.31</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
 		</dependency>

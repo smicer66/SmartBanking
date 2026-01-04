@@ -13,5 +13,8 @@ import java.math.BigInteger;
 public interface ICustomerRepository extends JpaRepository<Customer, BigInteger> {
 
     @Query("Select tp from Customer tp where tp.customerId = :customerId")
-    public Address getCustomerByCustomerId(BigInteger customerId);
+    public Customer getCustomerByCustomerId(BigInteger customerId);
+
+    @Query("Select tp from Customer tp where tp.userId = :userId")
+    Customer getCustomerByUserId(BigInteger userId);
 }

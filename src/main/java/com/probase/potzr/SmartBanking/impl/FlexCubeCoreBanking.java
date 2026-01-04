@@ -64,13 +64,13 @@ public class FlexCubeCoreBanking implements ICoreBanking {
     private HttpServletRequest request;
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Value("${user.account.token.valid.period}")
+    private int userAccountTokenValidPeriod;
+
     @Override
     public CoreBankingType getCoreBankingType() {
         return coreBankingType;
     }
-
-    @Value("${user.account.token.valid.period}")
-    private int userAccountTokenValidPeriod;
 
     @Override
     public BalanceInquiryResponse getBalanceInquiry(Collection<ClientSetting> clientSettings, BalanceInquiryRequest balanceInquiryRequest) throws ApplicationException {

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -19,11 +20,11 @@ public class IdentificationDocument {
     @Column(name = "identificationNumber", nullable = false)
     private String identificationNumber;
     @Column(name = "issueDate", nullable = false)
-    private String issueDate;
+    private LocalDate issueDate;
     @Column(name = "identificationDocumentType", nullable = false)
     private IdentificationDocumentType identificationDocumentType;
     @Column(name = "expirationDate", nullable = false)
-    private String expirationDate;
+    private LocalDate expirationDate;
     @Column(name = "issuingAuthority", nullable = false)
     private String issuingAuthority;
     @Column(name = "placeOfIssue", nullable = false)
