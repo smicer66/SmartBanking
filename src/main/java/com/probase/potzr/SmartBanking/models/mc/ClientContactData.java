@@ -4,9 +4,11 @@ package com.probase.potzr.SmartBanking.models.mc;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
-public class ClientContactData {
+public class ClientContactData implements Serializable {
 
     private String email;
     private String fax;

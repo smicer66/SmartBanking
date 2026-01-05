@@ -1,7 +1,7 @@
 package com.probase.potzr.SmartBanking.impl;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mastercard.developer.mdes_digital_enablement_client.ApiException;
 import com.mastercard.developer.oauth.OAuth;
 import com.probase.potzr.SmartBanking.contract.IPaymentCardIssuerProcessor;
 import com.probase.potzr.SmartBanking.models.core.*;
@@ -79,7 +79,7 @@ public class MasterCardProcessor implements IPaymentCardIssuerProcessor {
             Client client,
             Collection<ClientSetting> clientSettings,
             IssueCardRequest issueCardRequest
-    ) throws UnrecoverableKeyException, CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, ApiException {
+    ) throws UnrecoverableKeyException, CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException {
 
         BigInteger customerId = issueCardRequest.getCustomerId();
         Customer customer = this.customerRepository.getCustomerByCustomerId(issueCardRequest.getCustomerId());
@@ -100,8 +100,10 @@ public class MasterCardProcessor implements IPaymentCardIssuerProcessor {
                 .toString();
 
 
-        String additionalDate01 = issueCardRequest.getRequestDate().toString();
-        String additionalDate02 = LocalDateTime.now().format(dtf);
+//        String additionalDate01 = issueCardRequest.getRequestDate().toString();
+//        String additionalDate02 = LocalDateTime.now().format(dtf);
+        String additionalDate01 = "2026-01-04T03:25:50";
+        String additionalDate02 = "2026-01-04T03:25:50";
         List<ClientCustomData> clientCustomDataList = new ArrayList<ClientCustomData>();
         ClientCustomData clientCustomData = new ClientCustomData();
         clientCustomData.setRemoveTag(false);
@@ -184,29 +186,35 @@ public class MasterCardProcessor implements IPaymentCardIssuerProcessor {
 
 
         MCUtil mcUtil = new MCUtil();
-        ObjectMapper objectMapper = new ObjectMapper();
-        String ds = "{\"clientCustomData\":[{\"removeTag\":false,\"tagContainer\":\"ADD_INFO_01\",\"tagName\":\"Charles Nchimunya\",\"tagValue\":\"1\"}],\"clientNumber\":\"1\",\"clientType\":\"PNR\",\"orderDepartment\":\"Smart Banking\",\"serviceGroupCode\":\"Smart Banking\",\"additionalDate01\":\"2026-01-01T02:49\",\"additionalDate02\":\"2026-01-01T23:01:25\",\"clientBaseAddressData\":{\"addressLine1\":\"4 Lukanga Road\",\"addressLine2\":\"Roma\",\"addressLine3\":\"Lusaka\",\"city\":\"Lusaka\",\"country\":\"ZMB\",\"postalCode\":\"1111\",\"state\":\"Lusaka\"},\"clientCompanyData\":{\"companyDepartment\":\"SmartBanking\",\"companyName\":\"Probase\",\"companyTradeName\":\"Probase\",\"position\":\"Customer\"},\"clientContactData\":{\"email\":\"smicer66@gmail.com\",\"phoneNumberHome\":\"08094073705\",\"phoneNumberMobile\":\"08094073705\"},\"clientIdentificationData\":{\"identificationDocumentDetails\":\"1\",\"identificationDocumentNumber\":\"ZM-891821910AB\",\"identificationDocumentType\":\"Passport\"},\"clientPersonalData\":{\"birthDate\":\"1953-01-01\",\"birthName\":\"Charles Nchimunya\",\"citizenship\":\"ZM\",\"firstName\":\"Charles\",\"gender\":\"M\",\"lastName\":\"Nchimunya\",\"maritalStatus\":\"DS\"},\"embossedData\":{\"firstName\":\"Charles\",\"lastName\":\"Nchimunya\"}}";
-        //ds = "{\"clientCustomData\": [{\"removeTag\": false,\"tagContainer\": \"ADD_INFO_01\",\"tagName\": \"TAG_01\",\"tagValue\": \"TAG_01_VALUE\"}],\"clientNumber\": \"ABC_5698521931\",\"clientType\": \"PR\",\"orderDepartment\": \"Department\",\"serviceGroupCode\": \"021\",\"additionalDate01\": \"2021-01-27T09:59:44Z\",\"additionalDate02\": \"2021-02-15T20:58:39Z\",\"clientBaseAddressData\": {\"addressLine1\": \"Mrs. Alice Smith Apartment\",\"addressLine2\": \"1c 213\",\"addressLine3\": \"Derrick Street\",\"addressLine4\": \"2nd floor\",\"city\": \"Boston\",\"country\": \"USA\",\"postalCode\": \"02130\",\"state\": \"MA\"},\"clientCompanyData\": {\"companyDepartment\": \"Department\",\"companyName\": \"Company\",\"companyTradeName\": \"Company Trade\",\"position\": \"Employee\"},\"clientContactData\": {\"email\": \"johndoe@example.com\",\"fax\": \"0048123456777\",\"faxHome\": \"0048123456888\",\"phoneNumberHome\": \"0048123456999\",\"phoneNumberMobile\": \"0048123456778\",\"phoneNumberWork\": \"0048123456789\"},\"clientIdentificationData\": {\"identificationDocumentDetails\": \"161235698529429\",\"identificationDocumentNumber\": \"161235698529328\",\"identificationDocumentType\": \"Passport\",\"socialNumber\": \"161235698529227\",\"taxPosition\": \"Tax position\",\"taxpayerIdentifier\": \"161235698529531\"},\"clientPersonalData\": {\"birthDate\": \"2021-06-25\",\"birthName\": \"Doe\",\"birthPlace\": \"Warsaw\",\"citizenship\": \"USA\",\"firstName\": \"John\",\"gender\": \"M\",\"language\": \"en\",\"lastName\": \"Doe\",\"maritalStatus\": \"DS\",\"middleName\": \"Carl\",\"secretPhrase\": \"secret\",\"shortName\": \"Madley\",\"suffix\": \"PhD\",\"title\": \"MR\"},\"clientExpiryDate\": \"2029-06-25\",\"embossedData\": {\"companyName\": \"COMPANY\",\"firstName\": \"JOHN\",\"lastName\": \"DOE\",\"title\": \"MR\"}}";
-        createMCClientRequest = objectMapper.readValue(ds, CreateMCClientRequest.class);
-        String authSign =
-                mcUtil.sign(createMCClientRequest);
+//        ObjectMapper objectMapper = new ObjectMapper();
+//            //String ds = "{\"clientCustomData\":[{\"removeTag\":false,\"tagContainer\":\"ADD_INFO_01\",\"tagName\":\"Charles Nchimunya\",\"tagValue\":\"1\"}],\"clientNumber\":\"1\",\"clientType\":\"PNR\",\"orderDepartment\":\"Smart Banking\",\"serviceGroupCode\":\"Smart Banking\",\"additionalDate01\":\"2026-01-01T02:49\",\"additionalDate02\":\"2026-01-01T23:01:25\",\"clientBaseAddressData\":{\"addressLine1\":\"4 Lukanga Road\",\"addressLine2\":\"Roma\",\"addressLine3\":\"Lusaka\",\"city\":\"Lusaka\",\"country\":\"ZMB\",\"postalCode\":\"1111\",\"state\":\"Lusaka\"},\"clientCompanyData\":{\"companyDepartment\":\"SmartBanking\",\"companyName\":\"Probase\",\"companyTradeName\":\"Probase\",\"position\":\"Customer\"},\"clientContactData\":{\"email\":\"smicer66@gmail.com\",\"phoneNumberHome\":\"08094073705\",\"phoneNumberMobile\":\"08094073705\"},\"clientIdentificationData\":{\"identificationDocumentDetails\":\"1\",\"identificationDocumentNumber\":\"ZM-891821910AB\",\"identificationDocumentType\":\"Passport\"},\"clientPersonalData\":{\"birthDate\":\"1953-01-01\",\"birthName\":\"Charles Nchimunya\",\"citizenship\":\"ZM\",\"firstName\":\"Charles\",\"gender\":\"M\",\"lastName\":\"Nchimunya\",\"maritalStatus\":\"DS\"},\"embossedData\":{\"firstName\":\"Charles\",\"lastName\":\"Nchimunya\"}}";
+//
+//        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+//            //ds = "{\"clientCustomData\": [{\"removeTag\": false,\"tagContainer\": \"ADD_INFO_01\",\"tagName\": \"TAG_01\",\"tagValue\": \"TAG_01_VALUE\"}],\"clientNumber\": \"ABC_5698521931\",\"clientType\": \"PR\",\"orderDepartment\": \"Department\",\"serviceGroupCode\": \"021\",\"additionalDate01\": \"2021-01-27T09:59:44Z\",\"additionalDate02\": \"2021-02-15T20:58:39Z\",\"clientBaseAddressData\": {\"addressLine1\": \"Mrs. Alice Smith Apartment\",\"addressLine2\": \"1c 213\",\"addressLine3\": \"Derrick Street\",\"addressLine4\": \"2nd floor\",\"city\": \"Boston\",\"country\": \"USA\",\"postalCode\": \"02130\",\"state\": \"MA\"},\"clientCompanyData\": {\"companyDepartment\": \"Department\",\"companyName\": \"Company\",\"companyTradeName\": \"Company Trade\",\"position\": \"Employee\"},\"clientContactData\": {\"email\": \"johndoe@example.com\",\"fax\": \"0048123456777\",\"faxHome\": \"0048123456888\",\"phoneNumberHome\": \"0048123456999\",\"phoneNumberMobile\": \"0048123456778\",\"phoneNumberWork\": \"0048123456789\"},\"clientIdentificationData\": {\"identificationDocumentDetails\": \"161235698529429\",\"identificationDocumentNumber\": \"161235698529328\",\"identificationDocumentType\": \"Passport\",\"socialNumber\": \"161235698529227\",\"taxPosition\": \"Tax position\",\"taxpayerIdentifier\": \"161235698529531\"},\"clientPersonalData\": {\"birthDate\": \"2021-06-25\",\"birthName\": \"Doe\",\"birthPlace\": \"Warsaw\",\"citizenship\": \"USA\",\"firstName\": \"John\",\"gender\": \"M\",\"language\": \"en\",\"lastName\": \"Doe\",\"maritalStatus\": \"DS\",\"middleName\": \"Carl\",\"secretPhrase\": \"secret\",\"shortName\": \"Madley\",\"suffix\": \"PhD\",\"title\": \"MR\"},\"clientExpiryDate\": \"2029-06-25\",\"embossedData\": {\"companyName\": \"COMPANY\",\"firstName\": \"JOHN\",\"lastName\": \"DOE\",\"title\": \"MR\"}}";
+//            //createMCClientRequest = objectMapper.readValue(ds, CreateMCClientRequest.class);
+//        String authSign =
+//                mcUtil.sign(createMCClientRequest);
+//
+//        System.out.println(authSign);
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.add("Authorization", authSign);
+//        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+//        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+//
+//        ResponseEntity<IssueCardResponse> response =
+//                restTemplate.exchange(uri, HttpMethod.POST, new HttpEntity<>(createMCClientRequest, httpHeaders),
+//                        new ParameterizedTypeReference<IssueCardResponse>() {
+//                        });
+//
+//        if (response.getBody() != null) {
+//            issueCardResponse = response.getBody();
+//        }
+//        return issueCardResponse;
 
-        System.out.println(authSign);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", authSign);
-        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-
-        ResponseEntity<IssueCardResponse> response =
-                restTemplate.exchange(uri, HttpMethod.POST, new HttpEntity<>(ds, httpHeaders),
-                        new ParameterizedTypeReference<IssueCardResponse>() {
-                        });
-
-        if (response.getBody() != null) {
-            issueCardResponse = response.getBody();
-        }
+        mcUtil.check(createMCClientRequest);
 
 
-        return issueCardResponse;
+        return new IssueCardResponse();
 
     }
 

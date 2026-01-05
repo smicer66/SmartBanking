@@ -7,9 +7,11 @@ import lombok.Setter;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
-public class ClientBaseAddressData {
+public class ClientBaseAddressData implements Serializable {
     private String addressLine1;
     private String addressLine2;
     private String addressLine3;

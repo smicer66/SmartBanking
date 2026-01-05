@@ -1,7 +1,6 @@
 package com.probase.potzr.SmartBanking.service;
 
 
-import com.mastercard.developer.mdes_digital_enablement_client.ApiException;
 import com.probase.potzr.SmartBanking.factory.PaymentCardIssuerFactory;
 import com.probase.potzr.SmartBanking.models.core.Client;
 import com.probase.potzr.SmartBanking.models.core.ClientSetting;
@@ -34,7 +33,7 @@ public class PaymentCardIssuerService {
     private HttpServletRequest request;
 
 
-    public IssueCardResponse issueCard(IssueCardRequest issueCardRequest) throws UnrecoverableKeyException, CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, ApiException {
+    public IssueCardResponse issueCard(IssueCardRequest issueCardRequest) throws UnrecoverableKeyException, CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException {
         PaymentCardIssuer paymentCardIssuer = PaymentCardIssuer.MASTERCARD;
         String sourceBankCode = issueCardRequest.getBankCode();
         Client client = clientRepository.getClientByBankCode(sourceBankCode);

@@ -5,9 +5,11 @@ import com.probase.potzr.SmartBanking.models.enums.IdentificationDocumentType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
-public class ClientIdentificationData {
+public class ClientIdentificationData implements Serializable {
     private String identificationDocumentDetails;
     private String identificationDocumentNumber;
     private String identificationDocumentType;

@@ -4,12 +4,13 @@ import com.probase.potzr.SmartBanking.models.mc.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.List;
 
 
 @Getter
 @Setter
-public class CreateMCClientRequest {
+public class CreateMCClientRequest implements Serializable {
 
     private List<ClientCustomData> clientCustomData;
     private String clientNumber;

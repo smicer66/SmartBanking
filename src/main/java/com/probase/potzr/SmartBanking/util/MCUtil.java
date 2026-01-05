@@ -1,27 +1,23 @@
 package com.probase.potzr.SmartBanking.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mastercard.developer.interceptors.OkHttpOAuth1Interceptor;
-import com.mastercard.developer.mdes_digital_enablement_client.*;
 import com.mastercard.developer.oauth.OAuth;
+import com.mastercard.developer.oauth.Util;
 import com.mastercard.developer.signers.HttpsUrlConnectionSigner;
 import com.mastercard.developer.utils.AuthenticationUtils;
-import okhttp3.*;
-import okio.Buffer;
+import com.probase.potzr.SmartBanking.models.requests.CreateMCClientRequest;
+import org.apache.commons.lang3.SerializationUtils;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.UnrecoverableKeyException;
+import java.security.*;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +29,7 @@ public class MCUtil {
     String signingKeyFilePath = "C:\\jcodes\\dev\\keys\\mcv1\\SmartBanking-sandbox-signing.p12";
     String signingKeyPassword = "chelsea7";
 
-    private PrivateKey getPrivateKey() throws UnrecoverableKeyException, CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException {
+    public PrivateKey getPrivateKey() throws UnrecoverableKeyException, CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException {
 
         PrivateKey signingKey = AuthenticationUtils.loadSigningKey(
                 signingKeyFilePath,
@@ -91,53 +87,96 @@ public class MCUtil {
     }
 
 
-    public String sign(Object object) throws UnrecoverableKeyException, CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, ApiException {
-        ApiClient apiClient = Configuration.getDefaultApiClient();
-        apiClient.setBasePath("https://sandbox.api.mastercard.com/global-processing/core/clients");
-        //RequestBody.create((byte[]) obj, MediaType.parse(contentType));
-        okhttp3.OkHttpClient http3Client = apiClient.getHttpClient();
-        PrivateKey signingKey = AuthenticationUtils.loadSigningKey(signingKeyFilePath, signingKeyAlias, signingKeyPassword);
-        apiClient.setHttpClient(
-                apiClient.getHttpClient()
-                        .newBuilder()
-                        .addInterceptor(new OkHttpOAuth1Interceptor(consumerKey, signingKey))
-                        .build()
-        );
+//    public String sign(CreateMCClientRequest object) throws UnrecoverableKeyException, CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, ApiException {
+//        ApiClient apiClient = Configuration.getDefaultApiClient();
+//        apiClient.setBasePath("https://sandbox.api.mastercard.com/global-processing/core/clients");
+//        //RequestBody.create((byte[]) obj, MediaType.parse(contentType));
+//        okhttp3.OkHttpClient http3Client = apiClient.getHttpClient();
+//        PrivateKey signingKey = AuthenticationUtils.loadSigningKey(signingKeyFilePath, signingKeyAlias, signingKeyPassword);
+//        apiClient.setHttpClient(
+//                apiClient.getHttpClient()
+//                        .newBuilder()
+//                        .addInterceptor(new OkHttpOAuth1Interceptor(consumerKey, signingKey))
+//                        .build()
+//        );
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+//        MediaType mediaType = MediaType.parse("application/json");
+//        System.out.println(objectMapper.writeValueAsString(object));
+//        RequestBody body = RequestBody.create(mediaType, objectMapper.writeValueAsString(object));
+//        //"{\n  \"clientNumber\": \"1\",\n  \"clientType\": \"PNR\",\n  \"clientCustomData\": [\n    {\n      \"tagContainer\": \"ADD_INFO_03\",\n      \"tagName\": \"-3F\",\n      \"removeTag\": \"false\",\n      \"tagValue\": \"1\"\n    },\n    {\n      \"tagContainer\": \"ADD_INFO_02\",\n      \"tagName\": \"Charles Nchimunya\",\n      \"removeTag\": \"false\",\n      \"tagValue\": \"1\"\n    }\n  ],\n  \"orderDepartment\": \"Smart Banking\",\n  \"serviceGroupCode\": \"Smart Banking\",\n  \"additionalDate01\": \"2026-01-01T02:49:25\",\n  \"additionalDate02\": \"2026-01-01T23:01:25\",\n  \"clientBaseAddressData\": {\n    \"addressLine1\": \"4 Lukanga Road\",\n    \"addressLine2\": \"Roma\",\n    \"addressLine3\": \"Lusaka\",\n    \"addressLine4\": \"Lusaka\",\n    \"city\": \"Lusaka\",\n    \"country\": \"ZMB\",\n    \"postalCode\": \"1111\",\n    \"state\": \"Lusaka\"\n  },\n  \"clientCompanyData\": {\n    \"companyDepartment\": \"SmartBanking\",\n    \"companyName\": \"Probase\",\n    \"companyTradeName\": \"Probase\",\n    \"position\": \"Customer\"\n  },\n  \"clientContactData\": {\n    \"email\": \"smicer66@gmail.com\",\n    \"fax\": \"08094073705\",\n    \"faxHome\": \"08094073705\",\n    \"phoneNumberHome\": \"08094073705\",\n    \"phoneNumberMobile\": \"08094073705\",\n    \"phoneNumberWork\": \"08094073705\"\n  },\n  \"clientIdentificationData\": {\n    \"identificationDocumentDetails\": \"1\",\n    \"identificationDocumentNumber\": \"ZM-891821910AB\",\n    \"identificationDocumentType\": \"Passport\",\n    \"socialNumber\": \"<string>\",\n    \"taxPosition\": \"<string>\",\n    \"taxpayerIdentifier\": \"<string>\"\n  },\n  \"clientPersonalData\": {\n    \"birthDate\": \"<date>\",\n    \"birthName\": \"<string>\",\n    \"birthPlace\": \"<string>\",\n    \"citizenship\": \"<string>\",\n    \"firstName\": \"<string>\",\n    \"gender\": \"N\",\n    \"language\": \"sn\",\n    \"lastName\": \"<string>\",\n    \"maritalStatus\": \"<string>\",\n    \"middleName\": \"<string>\",\n    \"secretPhrase\": \"<string>\",\n    \"shortName\": \"<string>\",\n    \"suffix\": \"<string>\",\n    \"title\": \"<string>\"\n  },\n  \"clientExpiryDate\": \"<date>\",\n  \"embossedData\": {\n    \"companyName\": \"<string>\",\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"title\": \"<string>\"\n  }\n}"
+//
+//
+//        Request request = new Request.Builder()
+//                .url("https://sandbox.api.mastercard.com/global-processing/core/clients")
+//                //.method("POST", body)
+//                .post(body)
+//                //.addHeader("Idempotency-Key", "<uuid>")
+//                .addHeader("Content-Type", "application/json")
+//                .addHeader("Accept", "application/json")
+//                .addHeader("Authorization", "OAuth oauth_consumer_key=\"nVw7JfSOIHC8zrY7PrWT4759Kpow_i3jMN4HHPZH5ec9c2d6%216405d5d712a94ab192c6512a9ae1b8f60000000000000000\",oauth_signature_method=\"HMAC-SHA1\",oauth_timestamp=\"1767326161\",oauth_nonce=\"RdX0COkxkmu\",oauth_version=\"1.0\",oauth_signature=\"4DTuXTngwPcYa%2BfW0F0Y%2F9lI%2Fdk%3D\"")
+//                .build();
+//
+//        //(String baseUrl, String path, String method, List<Pair> queryParams, List<Pair> collectionQueryParams, Object body, Map<String, String> headerParams, Map<String, String> cookieParams, Map<String, Object> formParams, String[] authNames, ApiCallback callback)
+//
+//        Response response = apiClient.getHttpClient().newCall(request).execute();
+//
+//
+//        Buffer buffer = new Buffer();
+//        request.body().writeTo(buffer);
+//        String t =  buffer.readUtf8();
+//        System.out.println(">>>>>>>>>>>>>>>>>>>>>");
+//        System.out.println(t);
+//
+//        String responseData = new String(response.body().bytes(), StandardCharsets.UTF_8);
+//        System.out.println(response);
+//        System.out.println(responseData);
+////        System.out.println(response.getData());
+//
+//        URI uri = URI.create(
+//                "https://sandbox.api.mastercard.com/global-processing/core/clients"
+//        );
+//        String method = "POST";
+//        Charset charset = StandardCharsets.UTF_8;
+//        return OAuth.getAuthorizationHeader(uri, method, objectMapper.writeValueAsString(object), charset, consumerKey, getPrivateKey());
+//
+//        //return responseData;
+//    }
+
+
+
+    public void check(CreateMCClientRequest a)
+    {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        MediaType mediaType = MediaType.parse("application/json");
-        System.out.println(objectMapper.writeValueAsString(object));
-        RequestBody body = RequestBody.create(mediaType, objectMapper.writeValueAsString(object));
-        //"{\n  \"clientNumber\": \"1\",\n  \"clientType\": \"PNR\",\n  \"clientCustomData\": [\n    {\n      \"tagContainer\": \"ADD_INFO_03\",\n      \"tagName\": \"-3F\",\n      \"removeTag\": \"false\",\n      \"tagValue\": \"1\"\n    },\n    {\n      \"tagContainer\": \"ADD_INFO_02\",\n      \"tagName\": \"Charles Nchimunya\",\n      \"removeTag\": \"false\",\n      \"tagValue\": \"1\"\n    }\n  ],\n  \"orderDepartment\": \"Smart Banking\",\n  \"serviceGroupCode\": \"Smart Banking\",\n  \"additionalDate01\": \"2026-01-01T02:49:25\",\n  \"additionalDate02\": \"2026-01-01T23:01:25\",\n  \"clientBaseAddressData\": {\n    \"addressLine1\": \"4 Lukanga Road\",\n    \"addressLine2\": \"Roma\",\n    \"addressLine3\": \"Lusaka\",\n    \"addressLine4\": \"Lusaka\",\n    \"city\": \"Lusaka\",\n    \"country\": \"ZMB\",\n    \"postalCode\": \"1111\",\n    \"state\": \"Lusaka\"\n  },\n  \"clientCompanyData\": {\n    \"companyDepartment\": \"SmartBanking\",\n    \"companyName\": \"Probase\",\n    \"companyTradeName\": \"Probase\",\n    \"position\": \"Customer\"\n  },\n  \"clientContactData\": {\n    \"email\": \"smicer66@gmail.com\",\n    \"fax\": \"08094073705\",\n    \"faxHome\": \"08094073705\",\n    \"phoneNumberHome\": \"08094073705\",\n    \"phoneNumberMobile\": \"08094073705\",\n    \"phoneNumberWork\": \"08094073705\"\n  },\n  \"clientIdentificationData\": {\n    \"identificationDocumentDetails\": \"1\",\n    \"identificationDocumentNumber\": \"ZM-891821910AB\",\n    \"identificationDocumentType\": \"Passport\",\n    \"socialNumber\": \"<string>\",\n    \"taxPosition\": \"<string>\",\n    \"taxpayerIdentifier\": \"<string>\"\n  },\n  \"clientPersonalData\": {\n    \"birthDate\": \"<date>\",\n    \"birthName\": \"<string>\",\n    \"birthPlace\": \"<string>\",\n    \"citizenship\": \"<string>\",\n    \"firstName\": \"<string>\",\n    \"gender\": \"N\",\n    \"language\": \"sn\",\n    \"lastName\": \"<string>\",\n    \"maritalStatus\": \"<string>\",\n    \"middleName\": \"<string>\",\n    \"secretPhrase\": \"<string>\",\n    \"shortName\": \"<string>\",\n    \"suffix\": \"<string>\",\n    \"title\": \"<string>\"\n  },\n  \"clientExpiryDate\": \"<date>\",\n  \"embossedData\": {\n    \"companyName\": \"<string>\",\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"title\": \"<string>\"\n  }\n}"
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException var6) {
+            throw new IllegalStateException("Unable to obtain RSA-SHA256 message digest", var6);
+        }
 
+        digest.reset();
+        //byte[] byteArray = null == payload ? "".getBytes() : payload.getBytes(charset);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-        Request request = new Request.Builder()
-                .url("https://sandbox.api.mastercard.com/global-processing/core/clients")
-                //.method("POST", body)
-                .post(body)
-                //.addHeader("Idempotency-Key", "<uuid>")
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .addHeader("Authorization", "OAuth oauth_consumer_key=\"nVw7JfSOIHC8zrY7PrWT4759Kpow_i3jMN4HHPZH5ec9c2d6%216405d5d712a94ab192c6512a9ae1b8f60000000000000000\",oauth_signature_method=\"HMAC-SHA1\",oauth_timestamp=\"1767326161\",oauth_nonce=\"RdX0COkxkmu\",oauth_version=\"1.0\",oauth_signature=\"4DTuXTngwPcYa%2BfW0F0Y%2F9lI%2Fdk%3D\"")
-                .build();
+        try (ObjectOutputStream out = new ObjectOutputStream(bos)) {
+            out.writeObject(a);
+            out.flush();
+            byte[] byteArray = bos.toByteArray();
+            byte[] hash = digest.digest(byteArray);
+            String s = Util.b64Encode(hash);
+            System.out.println(s);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
 
-        //(String baseUrl, String path, String method, List<Pair> queryParams, List<Pair> collectionQueryParams, Object body, Map<String, String> headerParams, Map<String, String> cookieParams, Map<String, Object> formParams, String[] authNames, ApiCallback callback)
-
-        Response response = apiClient.getHttpClient().newCall(request).execute();
-
-
-        Buffer buffer = new Buffer();
-        request.body().writeTo(buffer);
-        String t =  buffer.readUtf8();
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>");
-        System.out.println(t);
-
-        String responseData = new String(response.body().bytes(), StandardCharsets.UTF_8);
-        System.out.println(response);
-        System.out.println(responseData);
-//        System.out.println(response.getData());
-
-        return responseData;
+        try {
+            byte[] hash1 = digest.digest(objectMapper.writeValueAsString(a).getBytes(StandardCharsets.UTF_8));
+            String s1 = Util.b64Encode(hash1);
+            System.out.println(s1);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
-
 }

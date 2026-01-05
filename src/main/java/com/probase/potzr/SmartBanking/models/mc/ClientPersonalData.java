@@ -4,9 +4,11 @@ package com.probase.potzr.SmartBanking.models.mc;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
-public class ClientPersonalData {
+public class ClientPersonalData implements Serializable {
     private String birthDate;
     private String birthName;
     private String birthPlace;
